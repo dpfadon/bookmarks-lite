@@ -61,7 +61,7 @@
       },
       {
         "command": "bookmarks-lite.prev",
-        "key": "alt+k alt+js",
+        "key": "alt+k alt+j",
         "when": "editorTextFocus"
       }
     ],

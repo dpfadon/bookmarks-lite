@@ -281,7 +281,7 @@ export function activate(context: vscode.ExtensionContext) {
     [X] Problema delete pulsando boton se seguido si pulso demasiado rápido.
     [X] Borrar una detrás de otra pulsando el botón (seleccionar la siguiente)
     ( [ ] Poner la X tan satisfactoria )
-    [ ] Falta icono de la vista
+    [X] Falta icono de la vista
     [N] Icono correcto columna num de fila. O se hace con un HACK o se pone según el theme (oscuro/luminoso)
         [N] Probar el hack
         [N] hacer según el theme
