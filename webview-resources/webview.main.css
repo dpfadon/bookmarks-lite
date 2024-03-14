@@ -1,0 +1,216 @@
+@charset "UTF-8";
+html {
+  height: 100%;
+}
+
+body {
+  background-color: transparent;
+  height: 100%;
+}
+
+.main-container {
+  margin-left: 12px;
+  margin-right: 12px;
+}
+.main-container .filtercontainer {
+  text-align: end;
+  margin-bottom: 5px;
+}
+.main-container .filtercontainer label {
+  margin-right: 6px;
+}
+.main-container .filtercontainer input {
+  background-color: transparent;
+  border-radius: 2px;
+  width: 250px;
+  padding: 1px 7px;
+}
+
+.btn-separator {
+  margin: 0px 0.6rem;
+  display: inline-block;
+  height: 1.3rem;
+  width: 1px;
+  border-right: 1px dotted rgba(255, 255, 255, 0.3098039216);
+  line-height: 1rem;
+}
+
+.btn-item {
+  display: inline-block;
+  margin: 0rem 0.2rem;
+  cursor: pointer;
+}
+.btn-item img {
+  width: 15px;
+  height: 15px;
+  filter: grayscale(100%);
+  opacity: 0.8;
+  position: relative;
+  top: 4px;
+}
+.btn-item.btn-selected img {
+  filter: none;
+  opacity: 1;
+}
+
+body {
+  --ag-icon-font-family: "customfont";
+  --ag-icon-font-code-asc: "";
+  --ag-icon-font-code-desc: "";
+}
+
+.ag-ltr .ag-sort-indicator-icon {
+  margin-left: 6px;
+}
+
+/* .cell-icon { // Icono bookmark // TODO: DEPRECATED
+   margin-right: 2px;
+   position: relative;
+   top: 1.5px;
+   margin-left: -4px;
+}*/
+.row-icon {
+  height: 1.1rem;
+  position: relative;
+  top: 0.2rem;
+  margin-right: 0.4rem;
+  filter: grayscale(100%);
+}
+
+body .main-container .filtercontainer input {
+  border: 1px solid #9e9e9e;
+}
+body .gridcontainer {
+  border-top: 1px solid rgba(255, 255, 255, 0.2588235294);
+}
+body .ag-header-container {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2588235294);
+}
+body .ag-header-cell {
+  border-right: 1px solid red;
+}
+body .ag-header-cell:last-child {
+  border-right: none;
+}
+body .ag-header-cell-text {
+  padding-left: 8px;
+}
+body .ag-ltr .ag-cell {
+  padding-left: 8px;
+}
+body .ag-row {
+  cursor: pointer;
+  line-height: 22px;
+}
+body .ag-cell-focus {
+  border-radius: 2px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: transparent !important;
+}
+body.vscode-dark {
+  color: white;
+}
+body.vscode-dark .main-container .filtercontainer input {
+  border-color: rgba(255, 255, 255, 0.68);
+  color: white;
+}
+body.vscode-dark .gridcontainer {
+  border-color: rgba(255, 255, 255, 0.26);
+}
+body.vscode-dark .ag-row.ag-row-selected {
+  background-color: rgba(255, 255, 255, 0.13);
+}
+body.vscode-dark .ag-header-container {
+  border-color: rgba(255, 255, 255, 0.26);
+}
+body.vscode-dark .ag-header-cell {
+  border-right-color: rgba(255, 255, 255, 0.26);
+}
+body.vscode-dark .ag-cell-focus {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+body.vscode-light {
+  color: black;
+}
+body.vscode-light .main-container .filtercontainer input {
+  border-color: rgba(0, 0, 0, 0.45);
+  color: white;
+}
+body.vscode-light .gridcontainer {
+  border-color: rgba(0, 0, 0, 0.26);
+}
+body.vscode-light .ag-row.ag-row-selected {
+  background-color: rgba(0, 0, 0, 0.13);
+}
+body.vscode-light .ag-header-container {
+  border-color: rgba(0, 0, 0, 0.26);
+}
+body.vscode-light .ag-header-cell {
+  border-right-color: rgba(0, 0, 0, 0.26);
+}
+body.vscode-light .ag-cell-focus {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+body.vscode-high-contrast {
+  color: var(--vscode-foreground);
+}
+body.vscode-high-contrast .main-container .filtercontainer input {
+  border-color: var(--vscode-contrastBorder);
+  color: var(--vscode-foreground);
+}
+body.vscode-high-contrast .gridcontainer {
+  border-color: var(--vscode-contrastBorder);
+}
+body.vscode-high-contrast .ag-row.ag-row-selected {
+  border: 1px solid var(--vscode-contrastBorder) !important;
+  background-color: transparent;
+}
+body.vscode-high-contrast .ag-header-container {
+  border-color: var(--vscode-contrastBorder);
+}
+body.vscode-high-contrast .ag-header-cell {
+  border-right-color: var(--vscode-contrastBorder);
+}
+body.vscode-high-contrast .ag-cell-focus {
+  border: 1px solid var(--vscode-contrastBorder) !important;
+  background-color: transparent;
+}
+
+/*
+
+.color-list {
+	list-style: none;
+	padding: 0;
+}
+
+.color-entry {
+	width: 100%;
+	display: flex;
+	margin-bottom: 0.4em;
+	border: 1px solid var(--vscode-input-border);
+}
+
+.color-preview {
+	width: 2em;
+	height: 2em;
+}
+
+.color-preview:hover {
+	outline: inset white;
+}
+
+.color-input {
+	display: block;
+	flex: 1;
+	width: 100%;
+	color: var(--vscode-input-foreground);
+	background-color: var(--vscode-input-background);
+	border: none;
+	padding: 0 0.6em;
+}
+
+.add-color-button {
+	display: block;
+	border: none;
+	margin: 0 auto;
+}*/

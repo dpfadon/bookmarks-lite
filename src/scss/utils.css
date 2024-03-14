@@ -1,0 +1,15 @@
+
+.ALLSPACE {
+   height: 100%;
+}
+
+.FLCOL {
+   display: flex;
+   flex-direction: column;
+}
+
+.FLADJUSTV {
+   flex-grow: 1;
+   flex-shrink: 1;
+   height: 100%;
+}

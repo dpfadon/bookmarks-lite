@@ -1,0 +1,178 @@
+{
+  "name": "bookmarks-lite",
+  "displayName": "bookmarks-lite",
+  "description": "Adds bookmark functionality similar to what you can use in visual studio",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.84.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "bookmarks-lite.toggle",
+        "title": "bookmarks-lite: Toggle",
+        "icon": "$(bookmark)"
+      },
+      {
+        "command": "bookmarks-lite.next",
+        "title": "bookmarks-lite: Next",
+        "icon": "$(triangle-right)"
+      },
+      {
+        "command": "bookmarks-lite.prev",
+        "title": "bookmarks-lite: Prev",
+        "icon": "$(triangle-left)"
+      },
+      {
+        "command": "bookmarks-lite.deleteselected",
+        "title": "bookmarks-lite: Delete Selected",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "bookmarks-lite.contextual.deletebookmark",
+        "title": "Delete Bookmark"
+      },
+      {
+        "command": "bookmarks-lite.contextual.gotobookmark",
+        "title": "Navigate to Bookmark"
+      },
+      {
+         "command": "bookmarks-lite.contextual.linetoggle",
+         "title": "Toggle Bookmark"
+       }
+    ],
+    "keybindings": [
+      {
+        "command": "bookmarks-lite.toggle",
+        "key": "alt+k alt+k",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "bookmarks-lite.next",
+        "key": "alt+k alt+l",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "bookmarks-lite.prev",
+        "key": "alt+k alt+js",
+        "when": "editorTextFocus"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "bookmarks-lite.next",
+          "when": "view == bookmarks-lite.list",
+          "group": "navigation@04"
+        },
+        {
+          "command": "bookmarks-lite.prev",
+          "when": "view == bookmarks-lite.list",
+          "group": "navigation@03"
+        },
+        {
+          "command": "bookmarks-lite.deleteselected",
+          "when": "view == bookmarks-lite.list",
+          "group": "navigation@02"
+        },
+        {
+          "command": "bookmarks-lite.toggle",
+          "when": "view == bookmarks-lite.list",
+          "group": "navigation@01"
+        }
+      ],
+      "webview/context": [
+        {
+          "command": "bookmarks-lite.next",
+          "when": "webviewId == 'bookmarks-lite.list'",
+          "group": "xxx@02"
+        },
+        {
+          "command": "bookmarks-lite.prev",
+          "when": "webviewId == 'bookmarks-lite.list'",
+          "group": "xxx@01"
+        },
+        {
+          "command": "bookmarks-lite.contextual.gotobookmark",
+          "when": "webviewId == 'bookmarks-lite.list' && webviewSection == 'bookmark'",
+          "group": "yyy@02"
+        },
+        {
+          "command": "bookmarks-lite.contextual.deletebookmark",
+          "when": "webviewId == 'bookmarks-lite.list' && webviewSection == 'bookmark'",
+          "group": "yyy@01"
+        }
+      ],
+      "editor/lineNumber/context": [
+         {
+         "command": "bookmarks-lite.contextual.linetoggle"
+         }
+      ],
+      "commandPalette": [
+         { "command": "bookmarks-lite.contextual.linetoggle", "when": "false" }
+      ]
+    },
+    "views": {
+      "bookmarks-list": [
+        {
+          "type": "webview",
+          "id": "bookmarks-lite.list",
+          "name": "bookmark list"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "panel": [
+        {
+          "id": "bookmarks-list",
+          "title": "Bookmarks",
+          "icon": "img/bookmark-sq-white.svg"
+        }
+      ]
+    }
+  },
+
+  "scripts": {
+
+    "vscode:prepublish": "npm run compile",
+
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "watchscss": "sass --watch --no-source-map src/scss:webview-resources",
+
+    "vscode:prepublish.XXX": "npm run esbuild-base -- --minify",
+    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node",
+    "esbuild": "npm run esbuild-base -- --sourcemap",
+    "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
+    "test-compile": "tsc -p ./"
+
+
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.3",
+    "@types/node": "18.x",
+    "@types/vscode": "^1.84.0",
+    "@typescript-eslint/eslint-plugin": "^6.9.0",
+    "@typescript-eslint/parser": "^6.9.0",
+    "@vscode/test-electron": "^2.3.6",
+    "esbuild": "^0.20.0",
+    "eslint": "^8.52.0",
+    "glob": "^10.3.10",
+    "mocha": "^10.2.0",
+    "sass": "^1.69.5",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "ag-grid-community": "^31.0.1"
+  }
+}
