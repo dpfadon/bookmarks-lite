@@ -83,6 +83,7 @@ function createBookmarkGrid() {
     // API columnas https://www.ag-grid.com/javascript-data-grid/column-definitions/
     // API opciones https://www.ag-grid.com/javascript-data-grid/column-properties/
     var gridOptions = {
+        overlayNoRowsTemplate: '<div style="font-style: italic;">No bookmarks to show. Create bookmarks using the bar button, the context menu on the line number or using the key combination (ALT+K+K by default).</div>',
         columnDefs: [
             { 
                 headerName: 'Bookmark', field: 'name', 

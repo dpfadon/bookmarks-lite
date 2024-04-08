@@ -3,3 +3,5 @@ node_modules
 tmp
 dist
 DEV
+webview-resources/ag-grid-community.min.js
+webview-resources/ag-grid.min.css

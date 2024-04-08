@@ -74,14 +74,14 @@ export class BookmarksLiteViewProvider implements vscode.WebviewViewProvider {
                     <link href="${webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'webview-resources', 'reset.css'))}" rel="stylesheet">
                     <link href="${webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'webview-resources', 'utils.css'))}" rel="stylesheet">
                     <link href="${webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'webview-resources', 'webview.main.css'))}" rel="stylesheet">
-                    <link href="${webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'node_modules/ag-grid-community/styles', 'ag-grid.min.css'))}" rel="stylesheet">
+                    <link href="${webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'webview-resources/ag-grid', 'ag-grid.min.css'))}" rel="stylesheet">
                 </head>
                 <body>
                     <div class="ALLSPACE FLCOL main-container" data-vscode-context='{"preventDefaultContextMenuItems": true }'>
                         <div class="filtercontainer">
                             <div class="btn-item" id="btn-useicon1">
                                 <img src="${webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'img', 'bookmarkicon1.svg'))}"/>
-                            </div>                        
+                            </div>                    
                             <div class="btn-item" id="btn-useicon2">
                                 <img src="${webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'img', 'bookmarkicon2.svg'))}"/>
                             </div>
@@ -94,8 +94,8 @@ export class BookmarksLiteViewProvider implements vscode.WebviewViewProvider {
                         </div>
                     </div>
                     <script> const imgBaseUri = '${webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'img'))}'; </script>
-                    <script nonce="${nonce}" src="${webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'node_modules/ag-grid-community/dist', 'ag-grid-community.min.js'))}"></script>
-                    <script nonce="${nonce}" src="${webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'src/webview-content', 'webview.main.js'))}"></script>
+                    <script nonce="${nonce}" src="${webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'webview-resources/ag-grid', 'ag-grid-community.min.js'))}"></script>
+                    <script nonce="${nonce}" src="${webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'webview-resources', 'webview.main.js'))}"></script>
                 </body>
             </html>
         `;

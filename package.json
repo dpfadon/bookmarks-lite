@@ -44,9 +44,13 @@
         "title": "Navigate to Bookmark"
       },
       {
-         "command": "bookmarks-lite.contextual.linetoggle",
-         "title": "Toggle Bookmark"
-       }
+        "command": "bookmarks-lite.contextual.linetoggle",
+        "title": "Toggle Bookmark"
+      },
+      {
+        "command": "bookmarks-lite.contextual.showInList",
+        "title": "Show Bookmarks List View"
+      }
     ],
     "keybindings": [
       {
@@ -111,12 +115,22 @@
         }
       ],
       "editor/lineNumber/context": [
-         {
-         "command": "bookmarks-lite.contextual.linetoggle"
-         }
+        {
+          "command": "bookmarks-lite.contextual.linetoggle"
+        },
+        {
+          "command": "bookmarks-lite.contextual.showInList"
+        }
       ],
       "commandPalette": [
-         { "command": "bookmarks-lite.contextual.linetoggle", "when": "false" }
+        {
+          "command": "bookmarks-lite.contextual.linetoggle",
+          "when": "false"
+        },
+        {
+          "command": "bookmarks-lite.contextual.showInList",
+          "when": "false"
+        }
       ]
     },
     "views": {
@@ -138,26 +152,22 @@
       ]
     }
   },
-
   "scripts": {
-
     "vscode:prepublish": "npm run compile",
-
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js",
     "watchscss": "sass --watch --no-source-map src/scss:webview-resources",
-
     "vscode:prepublish.XXX": "npm run esbuild-base -- --minify",
     "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node",
     "esbuild": "npm run esbuild-base -- --sourcemap",
     "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
-    "test-compile": "tsc -p ./"
-
-
+    "test-compile": "tsc -p ./",
+    "copy-library": "cpy node_modules/ag-grid-community/styles/ag-grid.min.css webview-resources/ag-grid --flat && cpy node_modules/ag-grid-community/dist/ag-grid-community.min.js webview-resources/ag-grid --flat"
   },
+
   "devDependencies": {
     "@types/mocha": "^10.0.3",
     "@types/node": "18.x",
@@ -165,6 +175,7 @@
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.9.0",
     "@vscode/test-electron": "^2.3.6",
+    "cpy-cli": "^5.0.0",
     "esbuild": "^0.20.0",
     "eslint": "^8.52.0",
     "glob": "^10.3.10",

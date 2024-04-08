@@ -40,8 +40,6 @@ export function activate(context: vscode.ExtensionContext) {
 
     // toggle: Creamos / eliminamos un bookmark (con un comando que se asociará a una tecla también) 
     disposable = vscode.commands.registerCommand('bookmarks-lite.toggle', () => {
-        // TIP: para meter codigo en el editor
-        // vscode.window.activeTextEditor?.insertSnippet(new vscode.SnippetString(`#${123123}`));
         if (vscode.window.activeTextEditor?.selection) {
             // Puede ser útil: vscode.window.activeTextEditor.selection.isSingleLine
             const filename = vscode.window.activeTextEditor.document.fileName;
@@ -72,10 +70,10 @@ export function activate(context: vscode.ExtensionContext) {
 
     // show
     disposable = vscode.commands.registerCommand('bookmarks-lite.show', (index: number) => {
+        // Abre el documento de ese bookmark y manda el cursor a donde toca
         gs.setFocus(index);
         const bookmark = gs.getFocusedBookmark();
         openBookmarkDocument(bookmark);
-        
     });
     context.subscriptions.push(disposable);
 
@@ -108,7 +106,14 @@ export function activate(context: vscode.ExtensionContext) {
         updateLineDecorations();
         updateViewList();
     });
-    context.subscriptions.push(disposable);    
+    context.subscriptions.push(disposable);
+    disposable = vscode.commands.registerCommand('bookmarks-lite.contextual.showInList', (contextualInfo) => {
+        vscode.commands.executeCommand('bookmarks-lite.list.focus');
+        setTimeout(()=>{
+            // TODO:
+        },100);
+    });
+    context.subscriptions.push(disposable);      
 
     // Go to bookmark
     disposable = vscode.commands.registerCommand('bookmarks-lite.contextual.gotobookmark', (contextualInfo) => {
@@ -234,6 +239,20 @@ export function activate(context: vscode.ExtensionContext) {
     }    
 
     function openBookmarkDocument(bookmark: bookmarkInfo) {
+        vscode.workspace.openTextDocument(bookmark.filename).then(doc => {
+            vscode.window.showTextDocument(doc, {
+                preview: true,
+                selection: new vscode.Range(bookmark.line, 0, bookmark.line, 0)
+                // viewcolumn ¿?
+            }).then( item => {
+                updateLineDecorations();
+            });
+        }, err => {
+            vscode.window.showInformationMessage('Unable to navigate to Bookmark (\''+bookmark.name+'\'). File was not found.');
+        });
+    }
+
+    function XXXBORRARYYY(bookmark: bookmarkInfo) {
         vscode.workspace.openTextDocument(bookmark.filename).then(doc => {
             vscode.window.showTextDocument(doc, {
                 preview: true,
