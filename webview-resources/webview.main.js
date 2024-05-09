@@ -22,8 +22,8 @@ let cellEditingInProgress = false;
     window.addEventListener('message', event => {
         var message = event.data; // The json data that the extension sent
         switch (message.type) {
-            case 'xx':
-            case 'yy':
+            // case 'xx':
+            // case 'yy':
             case 'updateList': 
             case 'updateState': 
                 setGlobalState(message.state);
@@ -89,21 +89,28 @@ function createBookmarkGrid() {
                 headerName: 'Bookmark', field: 'name', 
                 singleClickEdit: true,
                 // filter: 'agTextColumnFilter', maxNumConditions: 1, floatingFilter: true, suppressMenu: true,
-                width: 120,
+                width: 140,
                 editable: true,
                 // cellRenderer: (params) => { return '<i class="cell-icon icon-bookmark-black"></i>' + params.value; }
-                cellRenderer: (params) => { return '<img class="row-icon" src="'+imgBaseUri+'/bookmarkicon'+stateGetSelectedIcon()+'.svg"></img>' + params.value; }
-
-            },
-            { 
-                headerName: 'File Location', field: 'filename',
-                flex: 1
+                cellRenderer: (params) => { return '<span class="editable-item"><img class="row-icon" src="'+imgBaseUri+'/bookmarkicon'+stateGetSelectedIcon()+'.svg"></img>' + params.value + '</span>'; }
             },
             { 
                 headerName: 'Line Number', field: 'line',
                 valueGetter: (args) => { return args.data.line+1; },
                 width: 90
-            }
+            },            
+            { 
+                headerName: 'File Location', field: 'filename',
+                flex: 1
+            },
+            { 
+                cellRenderer: (rowInfo) => {
+                    const rowId = getRowId(rowInfo);
+                    const escapedRowId = rowId.replaceAll('\\', '\\\\');
+                    return '<img onclick="deleteRowById(\''+ escapedRowId +'\')" class="row-button" src="'+imgBaseUri+'/cross.svg"></img>'; 
+                },
+                width:25
+            }            
         ],
         rowData: [],
         processRowPostCreate : (params) => {
@@ -226,4 +233,14 @@ function addGlobalEvents(ev) {
 
 function onFilterTextBoxChanged() {
     gridApi.setGridOption( 'quickFilterText', document.getElementById('filter-text-box').value );
+}
+
+
+function deleteRowById(id) {
+    // bookmark.filename, bookmark.line
+    const gridRowData = gridApi.getGridOption("rowData");
+    const bookmarkData = gridRowData.find( (item)=> { return getRowIdByData(item) === id; } );
+    if (bookmarkData) {
+        vscode.postMessage({ action: 'delete-bookmarks', bookmarks: [{filename: bookmarkData.filename, line: bookmarkData.line}]});
+    }
 }

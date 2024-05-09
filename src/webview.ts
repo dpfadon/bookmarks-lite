@@ -94,7 +94,7 @@ export class BookmarksLiteViewProvider implements vscode.WebviewViewProvider {
                         </div>
                     </div>
                     <script> const imgBaseUri = '${webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'img'))}'; </script>
-                    <script nonce="${nonce}" src="${webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'webview-resources/ag-grid', 'ag-grid-community.min.js'))}"></script>
+                    <script nonce="${nonce}" src="${webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'webview-resources/ag-grid', 'ag-grid-community.min.noStyle.js'))}"></script>
                     <script nonce="${nonce}" src="${webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'webview-resources', 'webview.main.js'))}"></script>
                 </body>
             </html>

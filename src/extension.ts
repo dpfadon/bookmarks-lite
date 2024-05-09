@@ -107,7 +107,7 @@ export function activate(context: vscode.ExtensionContext) {
         updateViewList();
     });
     context.subscriptions.push(disposable);
-    disposable = vscode.commands.registerCommand('bookmarks-lite.contextual.showInList', (contextualInfo) => {
+    disposable = vscode.commands.registerCommand('bookmarks-lite.contextual.showList', (contextualInfo) => {
         vscode.commands.executeCommand('bookmarks-lite.list.focus');
         setTimeout(()=>{
             // TODO:
@@ -252,7 +252,7 @@ export function activate(context: vscode.ExtensionContext) {
         });
     }
 
-    function XXXBORRARYYY(bookmark: bookmarkInfo) {
+    /*function XXXBORRARYYY(bookmark: bookmarkInfo) {
         vscode.workspace.openTextDocument(bookmark.filename).then(doc => {
             vscode.window.showTextDocument(doc, {
                 preview: true,
@@ -264,7 +264,7 @@ export function activate(context: vscode.ExtensionContext) {
         }, err => {
             vscode.window.showInformationMessage('Unable to navigate to Bookmark (\''+bookmark.name+'\'). File was not found.');
         });
-    }
+    }*/
 
     // ---------------------------------
 
@@ -299,7 +299,7 @@ export function activate(context: vscode.ExtensionContext) {
     [X] repasar tema delete
     [X] Problema delete pulsando boton se seguido si pulso demasiado rápido.
     [X] Borrar una detrás de otra pulsando el botón (seleccionar la siguiente)
-    ( [ ] Poner la X tan satisfactoria )
+    ( [X] Poner la X tan satisfactoria )
     [X] Falta icono de la vista
     [N] Icono correcto columna num de fila. O se hace con un HACK o se pone según el theme (oscuro/luminoso)
         [N] Probar el hack

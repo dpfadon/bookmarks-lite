@@ -28,7 +28,8 @@ export class GlobalStatus {
 
     public getState() {
         // https://code.visualstudio.com/api/references/vscode-api#Memento
-        let vsbstate: bookmarkState = this.context.globalState.get('BookmarksLiteState') as bookmarkState;
+        // let vsbstate: bookmarkState = this.context.globalState.get('BookmarksLiteState') as bookmarkState;
+        let vsbstate: bookmarkState = this.context.workspaceState.get('BookmarksLiteState') as bookmarkState;
         if (!vsbstate) { // Create new status object
             vsbstate = new bookmarkState();
         }
@@ -36,7 +37,7 @@ export class GlobalStatus {
     }
 
     public setState(vsbstate: bookmarkState) {
-        this.context.globalState.update('BookmarksLiteState', vsbstate);
+        this.context.workspaceState.update('BookmarksLiteState', vsbstate);
     }  
 
     public index = 1;

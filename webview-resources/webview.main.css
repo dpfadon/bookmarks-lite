@@ -63,18 +63,29 @@ body {
   margin-left: 6px;
 }
 
-/* .cell-icon { // Icono bookmark // TODO: DEPRECATED
-   margin-right: 2px;
-   position: relative;
-   top: 1.5px;
-   margin-left: -4px;
-}*/
 .row-icon {
   height: 1.1rem;
   position: relative;
   top: 0.2rem;
   margin-right: 0.4rem;
   filter: grayscale(100%);
+}
+
+.row-button {
+  /*height: 1.1rem;
+  position: relative;
+  top: 0.2rem;
+  margin-right: 0.4rem;
+  // filter: grayscale(100%);*/
+  width: 10px;
+  cursor: pointer;
+}
+.row-button:hover {
+  filter: brightness(2);
+}
+
+.editable-item:hover {
+  border-bottom: 1px solid #6c6c6c;
 }
 
 body .main-container .filtercontainer input {

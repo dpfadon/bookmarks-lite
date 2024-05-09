@@ -17,38 +17,38 @@
     "commands": [
       {
         "command": "bookmarks-lite.toggle",
-        "title": "bookmarks-lite: Toggle",
+        "title": "Toggle Bookmark in Editor Line",
         "icon": "$(bookmark)"
       },
       {
         "command": "bookmarks-lite.next",
-        "title": "bookmarks-lite: Next",
+        "title": "Navigate to Next",
         "icon": "$(triangle-right)"
       },
       {
         "command": "bookmarks-lite.prev",
-        "title": "bookmarks-lite: Prev",
+        "title": "Navigate to Previous",
         "icon": "$(triangle-left)"
       },
       {
         "command": "bookmarks-lite.deleteselected",
-        "title": "bookmarks-lite: Delete Selected",
+        "title": "Delete Selected Bookmark",
         "icon": "$(trash)"
       },
       {
         "command": "bookmarks-lite.contextual.deletebookmark",
-        "title": "Delete Bookmark"
+        "title": "Delete this Bookmark"
       },
       {
         "command": "bookmarks-lite.contextual.gotobookmark",
-        "title": "Navigate to Bookmark"
+        "title": "Navigate to this Bookmark"
       },
       {
         "command": "bookmarks-lite.contextual.linetoggle",
         "title": "Toggle Bookmark"
       },
       {
-        "command": "bookmarks-lite.contextual.showInList",
+        "command": "bookmarks-lite.contextual.showList",
         "title": "Show Bookmarks List View"
       }
     ],
@@ -115,12 +115,8 @@
         }
       ],
       "editor/lineNumber/context": [
-        {
-          "command": "bookmarks-lite.contextual.linetoggle"
-        },
-        {
-          "command": "bookmarks-lite.contextual.showInList"
-        }
+        { "command": "bookmarks-lite.contextual.linetoggle" },
+        { "command": "bookmarks-lite.contextual.showList" }
       ],
       "commandPalette": [
         {
@@ -128,7 +124,7 @@
           "when": "false"
         },
         {
-          "command": "bookmarks-lite.contextual.showInList",
+          "command": "bookmarks-lite.contextual.showList",
           "when": "false"
         }
       ]
@@ -160,12 +156,17 @@
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js",
     "watchscss": "sass --watch --no-source-map src/scss:webview-resources",
+
+
+    "esbuild-minify":"esbuild ./src/extension.ts --bundle --outfile=bundled/extension.js --external:vscode --format=cjs --platform=node --minify",
+
+    
     "vscode:prepublish.XXX": "npm run esbuild-base -- --minify",
     "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node",
     "esbuild": "npm run esbuild-base -- --sourcemap",
     "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
     "test-compile": "tsc -p ./",
-    "copy-library": "cpy node_modules/ag-grid-community/styles/ag-grid.min.css webview-resources/ag-grid --flat && cpy node_modules/ag-grid-community/dist/ag-grid-community.min.js webview-resources/ag-grid --flat"
+    "copy-library": "cpy node_modules/ag-grid-community/styles/ag-grid.min.css webview-resources/ag-grid --flat && cpy node_modules/ag-grid-community/dist/ag-grid-community.min.noStyle.js webview-resources/ag-grid --flat"
   },
 
   "devDependencies": {
