@@ -84,6 +84,9 @@ function createBookmarkGrid() {
     // API opciones https://www.ag-grid.com/javascript-data-grid/column-properties/
     var gridOptions = {
         overlayNoRowsTemplate: '<div style="font-style: italic;">No bookmarks to show. Create bookmarks using the bar button, the context menu on the line number or using the key combination (ALT+K+K by default).</div>',
+        defaultColDef: {
+            sortable: false
+        },        
         columnDefs: [
             { 
                 headerName: 'Bookmark', field: 'name', 
@@ -123,18 +126,20 @@ function createBookmarkGrid() {
                 params.eRow.dataset.vscodeContext = JSON.stringify(vscodeContext);
             }
         },
-        // rowSelection: 'single',
         singleClickEdit : true,
         animateRows: false,
-        rowSelection: 'multiple',
+        rowSelection: 'multiple', // rowSelection: 'single',
+        // suppressCellFocus:true, 
+        suppressHeaderFocus: true,
         getRowId: getRowId,
         readOnlyEdit: true,
         onRowDoubleClicked: onGridRowDoubleClicked,
         onCellEditRequest: onCellEditRequest,
         onCellEditingStarted: onCellEditingStarted,
         onCellEditingStopped: onCellEditingStopped,
-        // selectionChanged: onSelectionChanged,
-        onSelectionChanged: onSelectionChanged
+        onSelectionChanged: onSelectionChanged,
+        // onCellFocused: onCellFocused,
+        onCellKeyDown: onCellKeyDown
     };    
     const eGridDiv = document.querySelector('#myGrid');
     gridApi = createGrid(eGridDiv, gridOptions);
@@ -166,6 +171,17 @@ function onGridRowDoubleClicked(ev){
 function onSelectionChanged(ev) {
     const selected = ev.api.getSelectedRows();
     vscode.postMessage({ action: 'update-selection-from-view', selected});
+}
+
+
+function onCellKeyDown(ev) {
+    // Hacemos que cuando movamos el foco de celda se seleccione la fila
+    if (ev.event.code == "ArrowUp" || ev.event.code == "ArrowDown") {
+        setTimeout( ()=> {
+            const focusedrowIndex = gridApi.getFocusedCell().rowIndex;
+            selectRowByIndex(focusedrowIndex);
+        }, 1);
+    }
 }
     
 
@@ -242,5 +258,15 @@ function deleteRowById(id) {
     const bookmarkData = gridRowData.find( (item)=> { return getRowIdByData(item) === id; } );
     if (bookmarkData) {
         vscode.postMessage({ action: 'delete-bookmarks', bookmarks: [{filename: bookmarkData.filename, line: bookmarkData.line}]});
+    }
+}
+
+function selectRowByIndex( index ) {
+    const gridRowData = gridApi.getGridOption("rowData");
+    const rowData = gridRowData[index];
+    const rowNode = gridApi.getRowNode( getRowIdByData(rowData) );
+    if (rowNode) {
+        gridApi.deselectAll(); // https://www.ag-grid.com/javascript-data-grid/grid-api/#reference-selection
+        gridApi.setNodesSelected({ nodes: [rowNode], newValue: true });
     }
 }

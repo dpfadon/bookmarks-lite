@@ -15,120 +15,54 @@
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
-      {
-        "command": "bookmarks-lite.toggle",
-        "title": "Toggle Bookmark in Editor Line",
-        "icon": "$(bookmark)"
-      },
-      {
-        "command": "bookmarks-lite.next",
-        "title": "Navigate to Next",
-        "icon": "$(triangle-right)"
-      },
-      {
-        "command": "bookmarks-lite.prev",
-        "title": "Navigate to Previous",
-        "icon": "$(triangle-left)"
-      },
-      {
-        "command": "bookmarks-lite.deleteselected",
-        "title": "Delete Selected Bookmark",
-        "icon": "$(trash)"
-      },
-      {
-        "command": "bookmarks-lite.contextual.deletebookmark",
-        "title": "Delete this Bookmark"
-      },
-      {
-        "command": "bookmarks-lite.contextual.gotobookmark",
-        "title": "Navigate to this Bookmark"
-      },
-      {
-        "command": "bookmarks-lite.contextual.linetoggle",
-        "title": "Toggle Bookmark"
-      },
-      {
-        "command": "bookmarks-lite.contextual.showList",
-        "title": "Show Bookmarks List View"
-      }
+      { "command": "bookmarks-lite.toggle", "title": "Toggle Bookmark in Editor Line", "icon": "$(bookmark)" },
+      { "command": "bookmarks-lite.next", "title": "Navigate to Next", "icon": "$(triangle-right)" },
+      { "command": "bookmarks-lite.prev", "title": "Navigate to Previous", "icon": "$(triangle-left)" },
+      { "command": "bookmarks-lite.deleteselected", "title": "Delete Selected Bookmark", "icon": "$(trash)" },
+      { "command": "bookmarks-lite.contextual.deletebookmark", "title": "Delete this Bookmark" },
+      { "command": "bookmarks-lite.contextual.gotobookmark", "title": "Navigate to this Bookmark" },
+      { "command": "bookmarks-lite.contextual.linetoggle", "title": "Toggle Bookmark" },
+      { "command": "bookmarks-lite.contextual.showList", "title": "Show Bookmarks List View" }
     ],
     "keybindings": [
-      {
-        "command": "bookmarks-lite.toggle",
-        "key": "alt+k alt+k",
-        "when": "editorTextFocus"
-      },
-      {
-        "command": "bookmarks-lite.next",
-        "key": "alt+k alt+l",
-        "when": "editorTextFocus"
-      },
-      {
-        "command": "bookmarks-lite.prev",
-        "key": "alt+k alt+j",
-        "when": "editorTextFocus"
-      }
+      { "command": "bookmarks-lite.toggle", "key": "alt+k alt+k", "when": "editorTextFocus" },
+      { "command": "bookmarks-lite.next", "key": "alt+k alt+l", "when": "editorTextFocus" },
+      { "command": "bookmarks-lite.prev", "key": "alt+k alt+j", "when": "editorTextFocus" }
     ],
     "menus": {
       "view/title": [
-        {
-          "command": "bookmarks-lite.next",
-          "when": "view == bookmarks-lite.list",
-          "group": "navigation@04"
-        },
-        {
-          "command": "bookmarks-lite.prev",
-          "when": "view == bookmarks-lite.list",
-          "group": "navigation@03"
-        },
-        {
-          "command": "bookmarks-lite.deleteselected",
-          "when": "view == bookmarks-lite.list",
-          "group": "navigation@02"
-        },
-        {
-          "command": "bookmarks-lite.toggle",
-          "when": "view == bookmarks-lite.list",
-          "group": "navigation@01"
-        }
+        { "command": "bookmarks-lite.next", "when": "view == bookmarks-lite.list", "group": "navigation@04" },
+        { "command": "bookmarks-lite.prev", "when": "view == bookmarks-lite.list", "group": "navigation@03" },
+        { "command": "bookmarks-lite.deleteselected", "when": "view == bookmarks-lite.list", "group": "navigation@02" },
+        { "command": "bookmarks-lite.toggle", "when": "view == bookmarks-lite.list", "group": "navigation@01" }
       ],
       "webview/context": [
-        {
-          "command": "bookmarks-lite.next",
-          "when": "webviewId == 'bookmarks-lite.list'",
-          "group": "xxx@02"
-        },
-        {
-          "command": "bookmarks-lite.prev",
-          "when": "webviewId == 'bookmarks-lite.list'",
-          "group": "xxx@01"
-        },
-        {
-          "command": "bookmarks-lite.contextual.gotobookmark",
-          "when": "webviewId == 'bookmarks-lite.list' && webviewSection == 'bookmark'",
-          "group": "yyy@02"
-        },
-        {
-          "command": "bookmarks-lite.contextual.deletebookmark",
-          "when": "webviewId == 'bookmarks-lite.list' && webviewSection == 'bookmark'",
-          "group": "yyy@01"
-        }
+        { "command": "bookmarks-lite.next", "when": "webviewId == 'bookmarks-lite.list'", "group": "xxx@02" },
+        { "command": "bookmarks-lite.prev", "when": "webviewId == 'bookmarks-lite.list'", "group": "xxx@01" },
+        { "command": "bookmarks-lite.contextual.gotobookmark", "when": "webviewId == 'bookmarks-lite.list' && webviewSection == 'bookmark'", "group": "yyy@02" },
+        { "command": "bookmarks-lite.contextual.deletebookmark", "when": "webviewId == 'bookmarks-lite.list' && webviewSection == 'bookmark'", "group": "yyy@01" }
       ],
       "editor/lineNumber/context": [
         { "command": "bookmarks-lite.contextual.linetoggle" },
         { "command": "bookmarks-lite.contextual.showList" }
       ],
       "commandPalette": [
-        {
-          "command": "bookmarks-lite.contextual.linetoggle",
-          "when": "false"
-        },
-        {
-          "command": "bookmarks-lite.contextual.showList",
-          "when": "false"
-        }
+        { "command": "bookmarks-lite.contextual.linetoggle", "when": "false" },
+        { "command": "bookmarks-lite.contextual.showList", "when": "false" }
+      ],
+      "editor/context": [
+        { "submenu": "bookmarks-lite.editor/context", "group": "bookmarkslite" }
+      ],
+      "bookmarks-lite.editor/context": [
+        { "command": "bookmarks-lite.toggle", "when": "editorTextFocus", "group": "bookmarkslite@01" },
+        { "command": "bookmarks-lite.contextual.showList", "when": "editorTextFocus", "group": "bookmarkslite@04" },
+        { "command": "bookmarks-lite.next", "when": "editorTextFocus", "group": "bookmarkslite@02" },
+        { "command": "bookmarks-lite.prev", "when": "editorTextFocus", "group": "bookmarkslite@03" }
       ]
     },
+    "submenus": [
+      { "id": "bookmarks-lite.editor/context", "label": "Bookmarks lite" }
+    ],    
     "views": {
       "bookmarks-list": [
         {

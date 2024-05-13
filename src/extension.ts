@@ -41,11 +41,9 @@ export function activate(context: vscode.ExtensionContext) {
     // toggle: Creamos / eliminamos un bookmark (con un comando que se asociará a una tecla también) 
     disposable = vscode.commands.registerCommand('bookmarks-lite.toggle', () => {
         if (vscode.window.activeTextEditor?.selection) {
-            // Puede ser útil: vscode.window.activeTextEditor.selection.isSingleLine
             const filename = vscode.window.activeTextEditor.document.fileName;
             const line = vscode.window.activeTextEditor.selection.anchor.line;
-            // vscode.window.showInformationMessage('Line Number: ' + (line+1) + '\n File Location: '+filename);
-           gs.toggleBookmark(filename, line);
+            gs.toggleBookmark(filename, line);
         }    
         updateLineDecorations();
         updateViewList();
@@ -87,9 +85,23 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Delete (selected en list)
     disposable = vscode.commands.registerCommand('bookmarks-lite.deleteselected', () => {
-        gs.deleteSelectedAndUpdateSelection();
-        updateLineDecorations();
-        updateViewList();
+        const deleteaction = () => {
+            gs.deleteSelectedAndUpdateSelection();
+            updateLineDecorations();
+            updateViewList();
+        };
+        const selected = gs.getSelected();
+        if (selected && selected.length > 1) {
+            vscode.window.showInformationMessage("Are you sure you want to delete the ("+selected.length+") selected bookmarks?", "Yes", "No").then(answer => {
+              if (answer === "Yes") {
+                deleteaction();
+              }
+            });            
+        } else if (selected && selected.length === 1) {
+            deleteaction();
+        } else {
+            vscode.window.showInformationMessage("Select a bookmark from the list and click this button to delete it");
+        }
     });
     context.subscriptions.push(disposable);    
     disposable = vscode.commands.registerCommand('bookmarks-lite.contextual.deletebookmark', (contextualInfo) => {
@@ -100,9 +112,10 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposable);
 
     // Contextual desde el numero de linea
-    disposable = vscode.commands.registerCommand('bookmarks-lite.contextual.linetoggle', (contextualInfo) => {
-        // https://code.visualstudio.com/api/references/vscode-api#Uri
-        gs.toggleBookmark(contextualInfo.uri.fsPath, contextualInfo.lineNumber-1);
+    disposable = vscode.commands.registerCommand('bookmarks-lite.contextual.linetoggle', (contextualInfo,xx,yy) => {
+        let fsPath = contextualInfo.uri.fsPath; // https://code.visualstudio.com/api/references/vscode-api#Uri
+        let lineNumber = contextualInfo.lineNumber-1;
+        gs.toggleBookmark(fsPath, lineNumber);
         updateLineDecorations();
         updateViewList();
     });

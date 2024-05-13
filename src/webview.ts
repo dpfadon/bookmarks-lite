@@ -47,7 +47,8 @@ export class BookmarksLiteViewProvider implements vscode.WebviewViewProvider {
 
     public updateList(gs: GlobalStatus) {
         if (this.view) {
-            this.view.show?.(true); // `show` is not implemented in 1.49 but is for 1.50 insiders
+            // Lo siguiente hace que se abra la lista de bookmarks sola 
+            // this.view.show?.(true); // `show` is not implemented in 1.49 but is for 1.50 insiders
             this.view.webview.postMessage({ type:'updateList', state:gs.getState() }); // Mensaje del VSCODE a la VISTA
             // https://code.visualstudio.com/api/extension-guides/webview#passing-messages-from-an-extension-to-a-webview
         }
