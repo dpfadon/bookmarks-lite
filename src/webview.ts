@@ -54,7 +54,7 @@ export class BookmarksLiteViewProvider implements vscode.WebviewViewProvider {
         }
     } 
 
-    public selectFocused() {
+    public selectFocused() { // Selecciona en la lista el bookmark que está en foco
         if (this.view) {
             this.view.webview.postMessage({ type:'selectFocused', state:this.gs.getState() }); // Mensaje del VSCODE a la VISTA
         }
@@ -83,9 +83,12 @@ export class BookmarksLiteViewProvider implements vscode.WebviewViewProvider {
                             <div class="btn-item" id="btn-useicon1">
                                 <img src="${webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'img', 'bookmarkicon1.svg'))}"/>
                             </div>                    
+                            <div class="btn-item" id="btn-useicon3">
+                                <img src="${webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'img', 'bookmarkicon3.svg'))}"/>
+                            </div>                            
                             <div class="btn-item" id="btn-useicon2">
                                 <img src="${webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'img', 'bookmarkicon2.svg'))}"/>
-                            </div>
+                            </div>                            
                             <div class="btn-separator" style="margin-left: 0.3rem;">&nbsp;</div>
                             <label>Quick Filter:</label>
                             <input type="text" id="filter-text-box" placeholder="Filter bookmarks by any field..." oninput="onFilterTextBoxChanged()"/>

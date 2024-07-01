@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 
 // DTOs ---------------------------------
 export class bookmarkState {
-    focus: number = -1;
+    focus: number = -1; // Indice de la linea con el foco (el ultimo bookmark al que hemos navegado, desde el que navegamos si hacemos next o prev)
     lines: bookmarkInfo[] = [];
     selectedIcon = 2;
     selection: any[] = [];
@@ -47,19 +47,25 @@ export class GlobalStatus {
         const index = this.getIndexOf(filename, line);
         if (index !== -1){      // Ya existía: toggle off
             vsbstate.lines.splice(index, 1);
-            vsbstate.focus = -1;
+            if (vsbstate.lines.length === 0) { // Si no quedan bookmarks, reseteamos el foco
+                vsbstate.focus = -1;
+            } else {
+                vsbstate.focus = index >= vsbstate.lines.length ? vsbstate.lines.length-1 : index;
+            }
         } else {                // no existía: toggle on
             let lastindex = vsbstate.lines.map( (item: any) => item.index ).sort().pop(); // Buscamos el indice mayor del bookmark para poner el siguiente
+            // Mal. index no es el valor junto al nombre actualmente, esto da lugar a repetir el nombre
             lastindex = lastindex === null || lastindex === undefined ? 0 : lastindex;
             vsbstate.lines.push( new bookmarkInfo( lastindex+1, 'Bookmark'+(lastindex+1), line, filename ) );
+            vsbstate.focus = vsbstate.lines.length-1;
         }
         this.setState(vsbstate);
     }
 
-    public xxxBookmark(filename: any, line: number) {
+    /*public xxxBookmark(filename: any, line: number) {
         const vsbstate: any = this.getState();
         debugger;
-    }
+    }*/
 
     public getIndexOf(filename: string, line: number) {
         return this.getState().lines.findIndex((item: bookmarkInfo) => item.line === line && item.filename === filename);
@@ -86,7 +92,7 @@ export class GlobalStatus {
         vsbstate.focus--;
         if (vsbstate.focus < 0) {
             vsbstate.focus = vsbstate.lines.length > 0 ? vsbstate.lines.length-1 : -1;
-        }
+        }             
         this.setState(vsbstate);
     }
 
@@ -107,7 +113,7 @@ export class GlobalStatus {
         }
     }
 
-    // TODO: INDEXAR POR FICHERO, URGENTE
+    // Posibilidad: indexar por fichero para mejorar velocidad
     public getBookmarkedLinesOfFile(filename: string) {
         const bookmarks = this.getBookmarksOfFile(filename).map((item: any) => item.line);
         return bookmarks;

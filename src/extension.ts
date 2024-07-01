@@ -29,6 +29,12 @@ export function activate(context: vscode.ExtensionContext) {
         overviewRulerLane: vscode.OverviewRulerLane.Left,
         overviewRulerColor: 'rgba(240, 199, 0, 0.7)',
     });
+    let bookmarkDecoType3 = vscode.window.createTextEditorDecorationType({
+        gutterIconPath: context.asAbsolutePath('img\\bookmarkicon3.svg').split('\\').join('/'),
+        gutterIconSize: 'contain',
+        overviewRulerLane: vscode.OverviewRulerLane.Left,
+        overviewRulerColor: 'rgba(240, 199, 0, 0.7)',
+    });    
 
     const gs = new GlobalStatus(context);
 
@@ -43,10 +49,12 @@ export function activate(context: vscode.ExtensionContext) {
         if (vscode.window.activeTextEditor?.selection) {
             const filename = vscode.window.activeTextEditor.document.fileName;
             const line = vscode.window.activeTextEditor.selection.anchor.line;
-            gs.toggleBookmark(filename, line);
+            // gs.toggleBookmark(filename, line);
+            // selectFocusedInViewList(); // toggle cambia el foco y hay que reflejarlo en la lista
+            toggleBookmark(filename, line);
         }    
-        updateLineDecorations();
-        updateViewList();
+        // updateLineDecorations();
+        // updateViewList();
 	});
     context.subscriptions.push(disposable);
 
@@ -77,9 +85,10 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Delete (file, line)
     disposable = vscode.commands.registerCommand('bookmarks-lite.deleteone', (filename: string, line: number) => {
-        gs.toggleBookmark(filename, line);
+        /*gs.toggleBookmark(filename, line);
         updateLineDecorations();
-        updateViewList();
+        updateViewList();*/
+        toggleBookmark(filename, line);
     });
     context.subscriptions.push(disposable);
 
@@ -105,9 +114,10 @@ export function activate(context: vscode.ExtensionContext) {
     });
     context.subscriptions.push(disposable);    
     disposable = vscode.commands.registerCommand('bookmarks-lite.contextual.deletebookmark', (contextualInfo) => {
-        gs.toggleBookmark(contextualInfo.data.filename, contextualInfo.data.line);
+        /*gs.toggleBookmark(contextualInfo.data.filename, contextualInfo.data.line);
         updateLineDecorations();
-        updateViewList();
+        updateViewList();*/
+        toggleBookmark(contextualInfo.data.filename, contextualInfo.data.line);
     });
     context.subscriptions.push(disposable);
 
@@ -115,9 +125,10 @@ export function activate(context: vscode.ExtensionContext) {
     disposable = vscode.commands.registerCommand('bookmarks-lite.contextual.linetoggle', (contextualInfo,xx,yy) => {
         let fsPath = contextualInfo.uri.fsPath; // https://code.visualstudio.com/api/references/vscode-api#Uri
         let lineNumber = contextualInfo.lineNumber-1;
-        gs.toggleBookmark(fsPath, lineNumber);
+        /*gs.toggleBookmark(fsPath, lineNumber);
         updateLineDecorations();
-        updateViewList();
+        updateViewList();*/
+        toggleBookmark(fsPath, lineNumber);
     });
     context.subscriptions.push(disposable);
     disposable = vscode.commands.registerCommand('bookmarks-lite.contextual.showList', (contextualInfo) => {
@@ -177,19 +188,22 @@ export function activate(context: vscode.ExtensionContext) {
                         bookmark.line += lineNumberChange; // --> movemos
                     } else if (initiaLineNumber < bookmark.line) { // Si INICIO antes de la linea ...
                         if (finalLineNumber > bookmark.line) { // Si INICIO antes de la linea y FIN despues
-                            gs.toggleBookmark(fileName, bookmark.line); // --> eliminamos bookmark
+                            // gs.toggleBookmark(fileName, bookmark.line); // --> eliminamos bookmark
+                            toggleBookmark(fileName, bookmark.line);
                             vscode.window.showInformationMessage('Bookmark lost.');
                         } else if ( finalLineNumber === bookmark.line ) { // Si INICIO antes de la linea y FIN DENTRO ...
                             if (endchar === 0) { // Si el rango acaba en el ppo ...
                                 bookmark.line += lineNumberChange; // --> movemos
                             } else {
-                                gs.toggleBookmark(fileName, bookmark.line); // --> eliminamos bookmark
+                                // gs.toggleBookmark(fileName, bookmark.line); // --> eliminamos bookmark
+                                toggleBookmark(fileName, bookmark.line);
                                 vscode.window.showInformationMessage('Bookmark lost.');
                             }
                             // MEJORA: ... (si rango cogía toda la linea) --> eliminamos , en el resto de casos muevo
                         }
                     } else if (initiaLineNumber === bookmark.line && finalLineNumber > bookmark.line && initchar === 0) { // Si INICIO DENTRO (y inicio de rango en el inicio de la linea) y FIN DEBAJO ...
-                        gs.toggleBookmark(fileName, bookmark.line); // --> eliminamos bookmark
+                        // gs.toggleBookmark(fileName, bookmark.line); // --> eliminamos bookmark
+                        toggleBookmark(fileName, bookmark.line);
                         vscode.window.showInformationMessage('Bookmark lost.');
                     } else if (initiaLineNumber === bookmark.line && finalLineNumber === bookmark.line) { // SI inicio y final DENTRO 
                         if (initchar === 0) {
@@ -235,10 +249,12 @@ export function activate(context: vscode.ExtensionContext) {
             const bookmarkedLines = gs.getBookmarkedLinesOfFile( activeTextEditor.document.fileName );
             const ranges = bookmarkedLines.map((line:number) => new vscode.Range(new vscode.Position(line, 0), new vscode.Position(line, 0)));
             const selectedIcon = gs.getSelectedIcon();
-            const newDeco = selectedIcon === 2 ? bookmarkDecoType2 : bookmarkDecoType1;
+            const newDeco = selectedIcon === 3 ? bookmarkDecoType3 :
+                (selectedIcon === 2 ? bookmarkDecoType2 : bookmarkDecoType1);
             // Limpiamos las decoraciones y reasignamos
             activeTextEditor.setDecorations(bookmarkDecoType1, []);
             activeTextEditor.setDecorations(bookmarkDecoType2, []);
+            activeTextEditor.setDecorations(bookmarkDecoType3, []);
             activeTextEditor.setDecorations(newDeco, ranges);
         }
     }
@@ -253,9 +269,11 @@ export function activate(context: vscode.ExtensionContext) {
 
     function openBookmarkDocument(bookmark: bookmarkInfo) {
         vscode.workspace.openTextDocument(bookmark.filename).then(doc => {
+            // https://code.visualstudio.com/api/references/vscode-api
             vscode.window.showTextDocument(doc, {
                 preview: true,
-                selection: new vscode.Range(bookmark.line, 0, bookmark.line, 0)
+                selection: new vscode.Range(bookmark.line, 0, bookmark.line, 0),
+                preserveFocus: true
                 // viewcolumn ¿?
             }).then( item => {
                 updateLineDecorations();
@@ -265,19 +283,14 @@ export function activate(context: vscode.ExtensionContext) {
         });
     }
 
-    /*function XXXBORRARYYY(bookmark: bookmarkInfo) {
-        vscode.workspace.openTextDocument(bookmark.filename).then(doc => {
-            vscode.window.showTextDocument(doc, {
-                preview: true,
-                selection: new vscode.Range(bookmark.line, 0, bookmark.line, 0)
-                // viewcolumn ¿?
-            }).then( item => {
-                updateLineDecorations();
-            });
-        }, err => {
-            vscode.window.showInformationMessage('Unable to navigate to Bookmark (\''+bookmark.name+'\'). File was not found.');
-        });
-    }*/
+    function toggleBookmark(fsPath: string, lineNumber: number) {
+        gs.toggleBookmark(fsPath, lineNumber);
+        updateLineDecorations();
+        updateViewList();
+        selectFocusedInViewList(); // toggle cambia el foco y hay que reflejarlo en la lista
+    }
+
+
 
     // ---------------------------------
 

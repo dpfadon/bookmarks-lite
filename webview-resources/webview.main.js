@@ -48,21 +48,27 @@ function askForState() {
 function createButtons() {
     const btn1elem = document.getElementById("btn-useicon1");
     const btn2elem = document.getElementById("btn-useicon2");
+    const btn3elem = document.getElementById("btn-useicon3");
     btn1elem.addEventListener('click', ()=> {
         vscode.postMessage({ action: 'actualice-icon', iconindex: 1 }); // Lo captura en webview.ts
     });
     btn2elem.addEventListener('click', ()=> {
         vscode.postMessage({ action: 'actualice-icon', iconindex: 2 });
     });
+    btn3elem.addEventListener('click', ()=> {
+        vscode.postMessage({ action: 'actualice-icon', iconindex: 3 });
+    });
     actualizeSelectedBtnFromState();
 }
 function actualizeSelectedBtnFromState() {
     const btn1elem = document.getElementById("btn-useicon1");
-    const btn2elem = document.getElementById("btn-useicon2");    
+    const btn2elem = document.getElementById("btn-useicon2");
+    const btn3elem = document.getElementById("btn-useicon3");    
     const selIcon = stateGetSelectedIcon();
     removeClassFromElem(btn1elem, 'btn-selected');
     removeClassFromElem(btn2elem, 'btn-selected');
-    addClassToElem((selIcon===1?btn1elem:btn2elem), 'btn-selected');
+    removeClassFromElem(btn3elem, 'btn-selected');
+    addClassToElem((selIcon===3 ? btn3elem : (selIcon===2?btn2elem:btn1elem)), 'btn-selected');
     updateListWithState();
 }
 
@@ -176,11 +182,13 @@ function onSelectionChanged(ev) {
 
 function onCellKeyDown(ev) {
     // Hacemos que cuando movamos el foco de celda se seleccione la fila
-    if (ev.event.code == "ArrowUp" || ev.event.code == "ArrowDown") {
+    if (ev.event.code === "ArrowUp" || ev.event.code === "ArrowDown") {
         setTimeout( ()=> {
             const focusedrowIndex = gridApi.getFocusedCell().rowIndex;
             selectRowByIndex(focusedrowIndex);
         }, 1);
+    } else if (ev.event.code === "Enter" && (ev.colDef.field === 'line' || ev.colDef.field === 'filename')) {
+        this.onGridRowDoubleClicked(ev);
     }
 }
     
