@@ -1,8 +1,8 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { GlobalStatus, bookmarkInfo, bookmarkState } from './globalstatus';
-import { BookmarksLiteViewProvider } from './webview';
+import { BookmarksLiteViewProvider } from './BookmarksLiteViewProvider';
+import { GlobalStatus, bookmarkInfo } from './GlobalStatus';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -80,14 +80,19 @@ export function activate(context: vscode.ExtensionContext) {
         gs.setFocus(index);
         const bookmark = gs.getFocusedBookmark();
         openBookmarkDocument(bookmark);
+
+        updateViewList();
+        selectFocusedInViewList();
+        /*gs.toggleBookmark(fsPath, lineNumber);
+        updateLineDecorations();
+        updateViewList();
+        selectFocusedInViewList(); // toggle cambia el foco y hay que reflejarlo en la lista*/
+
     });
     context.subscriptions.push(disposable);
 
     // Delete (file, line)
     disposable = vscode.commands.registerCommand('bookmarks-lite.deleteone', (filename: string, line: number) => {
-        /*gs.toggleBookmark(filename, line);
-        updateLineDecorations();
-        updateViewList();*/
         toggleBookmark(filename, line);
     });
     context.subscriptions.push(disposable);
@@ -133,9 +138,9 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposable);
     disposable = vscode.commands.registerCommand('bookmarks-lite.contextual.showList', (contextualInfo) => {
         vscode.commands.executeCommand('bookmarks-lite.list.focus');
-        setTimeout(()=>{
+        /*setTimeout(()=>{
             // TODO:
-        },100);
+        },100);*/
     });
     context.subscriptions.push(disposable);      
 
@@ -162,7 +167,6 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Al cambiar de fichero activo
     context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor((editor) => {
-        // console.log("Active Editor Changed: " + editor?.document.fileName);
         updateLineDecorations();
     }));
 

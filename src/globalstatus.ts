@@ -2,14 +2,15 @@ import * as vscode from 'vscode';
 
 // DTOs ---------------------------------
 export class bookmarkState {
-    focus: number = -1; // Indice de la linea con el foco (el ultimo bookmark al que hemos navegado, desde el que navegamos si hacemos next o prev)
+    // Indice de la linea con el foco (el ultimo bookmark al que hemos navegado, desde el que navegamos si hacemos next o prev)
+    focus: number = -1; 
     lines: bookmarkInfo[] = [];
     selectedIcon = 2;
     selection: any[] = [];
 }
 export class bookmarkInfo {
     constructor(
-        public index: number,
+        public index: number, // Se usa para saber que nombre poner al siguiente bookmark
         public name: string,
         public line: number,
         public filename: string
@@ -52,20 +53,15 @@ export class GlobalStatus {
             } else {
                 vsbstate.focus = index >= vsbstate.lines.length ? vsbstate.lines.length-1 : index;
             }
-        } else {                // no existía: toggle on
-            let lastindex = vsbstate.lines.map( (item: any) => item.index ).sort().pop(); // Buscamos el indice mayor del bookmark para poner el siguiente
-            // Mal. index no es el valor junto al nombre actualmente, esto da lugar a repetir el nombre
-            lastindex = lastindex === null || lastindex === undefined ? 0 : lastindex;
-            vsbstate.lines.push( new bookmarkInfo( lastindex+1, 'Bookmark'+(lastindex+1), line, filename ) );
+        } else {  // no existía: toggle on
+            const allIndex = vsbstate.lines.map( (item: any) => item.index );
+            const lastIndex = allIndex.sort( (a:number,b:number) => a - b).pop();
+            const nextIndex = (lastIndex === null || lastIndex === undefined) ? 1 : lastIndex + 1;
+            vsbstate.lines.push( new bookmarkInfo( nextIndex, 'Bookmark'+nextIndex, line, filename ) );
             vsbstate.focus = vsbstate.lines.length-1;
         }
         this.setState(vsbstate);
     }
-
-    /*public xxxBookmark(filename: any, line: number) {
-        const vsbstate: any = this.getState();
-        debugger;
-    }*/
 
     public getIndexOf(filename: string, line: number) {
         return this.getState().lines.findIndex((item: bookmarkInfo) => item.line === line && item.filename === filename);
@@ -75,11 +71,13 @@ export class GlobalStatus {
     }    
 
     public setFocus(index: number) {
+//debugger;
         const vsbstate: any = this.getState();
         vsbstate.focus = index;
     }
 
     public focusNext() {
+//debugger;
         const vsbstate: any = this.getState();
         vsbstate.focus++;
         if (vsbstate.focus>=vsbstate.lines.length) {
@@ -88,6 +86,7 @@ export class GlobalStatus {
         this.setState(vsbstate);
     }
     public focusPrev() {
+//bugger;
         const vsbstate: any = this.getState();
         vsbstate.focus--;
         if (vsbstate.focus < 0) {
@@ -161,9 +160,11 @@ export class GlobalStatus {
     public getSelected() { return this.getState().selection; }
 
     public deleteSelectedAndUpdateSelection() {
+        const vsbstate: any = this.getState();
         const lines = this.getState().lines;
         const selectedItems: any = this.getSelected();
         if (selectedItems && selectedItems.length > 0) {
+            // Selecciono el siguiente elemento (al primero de los seleccionados) o ninguno según toque
             const selectedItem = selectedItems ? selectedItems[0] : null;
             const selIndex = this.getIndexOf(selectedItem.filename, selectedItem.line);
             let nextIndex = lines.findIndex( (row,i)=>(i>selIndex && this.getIndexOfIn(row.filename,row.line,selectedItems) === -1) ); // Indice del siguiente elemento no seleccionado para borrar
@@ -175,6 +176,7 @@ export class GlobalStatus {
             } else {
                 this.setSelected([]);
             }
+            // Eliminamos los bookmark
             selectedItems.forEach((bookmark:any) => {
                 this.toggleBookmark(bookmark.filename, bookmark.line);
             });

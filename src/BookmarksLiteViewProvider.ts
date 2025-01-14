@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { GlobalStatus } from './globalstatus';
+import { GlobalStatus } from './GlobalStatus';
 
 
 // VISTA -------------------------- bookmarks-list

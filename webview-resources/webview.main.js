@@ -22,16 +22,16 @@ let cellEditingInProgress = false;
     window.addEventListener('message', event => {
         var message = event.data; // The json data that the extension sent
         switch (message.type) {
-            // case 'xx':
-            // case 'yy':
             case 'updateList': 
             case 'updateState': 
                 setGlobalState(message.state);
                 updateListWithState();
+                // focusSelected(); // No queda bien al borrar uno que vaya al ppo
                 break;
             case 'selectFocused':
                 setGlobalState(message.state);
                 selectFocusedInState();
+                // focusSelected();
                 break;
         }
     });
@@ -101,7 +101,14 @@ function createBookmarkGrid() {
                 width: 140,
                 editable: true,
                 // cellRenderer: (params) => { return '<i class="cell-icon icon-bookmark-black"></i>' + params.value; }
-                cellRenderer: (params) => { return '<span class="editable-item"><img class="row-icon" src="'+imgBaseUri+'/bookmarkicon'+stateGetSelectedIcon()+'.svg"></img>' + params.value + '</span>'; }
+                cellRenderer: (params) => { 
+                    // console.log('params', params);
+                    const isFocused = globalstate.focus === params.rowIndex;
+                    return '<span class="editable-item">'
+                        +'<img class="row-icon'+ (isFocused ? ' focused-row-icon' : '') +'" src="'+imgBaseUri+'/bookmarkicon'+stateGetSelectedIcon()+'.svg"></img>'
+                        + params.value
+                        + '</span>'; 
+                }
             },
             { 
                 headerName: 'Line Number', field: 'line',
@@ -201,6 +208,16 @@ function updateListWithState() {
     setSelectedByIds(stateSelectionIds); // reseleccionamos desde el estado
 }
 
+function focusSelected() {
+    const selection = gridApi.getSelectedNodes();
+    if (selection && selection.length > 0) {
+        const selectedRow = selection[0];
+        const rowIndex = selectedRow.rowIndex;
+        gridApi.ensureIndexVisible(rowIndex);
+        // gridApi.setFocusedCell(rowIndex, 'name');
+    }
+}
+
 function setSelectedByIds(ids) {
     const selNodes = [];
     ids.forEach(id => {
@@ -222,35 +239,11 @@ function selectFocusedInState() {
     }
 }
 
-/*
-function deleteSelectedRows() {
-    // TODO: BORRAR: ojo al caso de borrar con una tecla
-    const selRows = gridApi.getSelectedRows(); // Los {filename, line, ...} 
-    if (selRows && selRows.length > 0) {
-        // Seleccionamos el siguiente elemento de la lista
-        const rowData = gridApi.getGridOption("rowData");
-        const selIndex = rowData.indexOf(selRows[0]); // Index de la primera fila borrada
-        let nextIndex = rowData.findIndex( (row,i)=>(i>selIndex && selRows.indexOf(row) === -1) ); // Indice del siguiente elemento no seleccionado para borrar
-        if (nextIndex === -1 && selIndex-1 >= 0) { // Si hemos borrado hasta el final, cogemos el anterior si lo hay
-            nextIndex = selIndex-1;
-        }
-        gridApi.deselectAll();
-        if (nextIndex !== -1) {
-            const nextNode = gridApi.getRowNode( getRowIdByData(rowData[nextIndex]) ); 
-            nextNode.setSelected(true);
-        }
-        // API: https://www.ag-grid.com/javascript-data-grid/row-selection/
-        vscode.postMessage({ action: 'delete-bookmarks', bookmarks: selRows});
-    }  
-}*/
 
 function addGlobalEvents(ev) {
     document.body.onkeydown = function(e){
         if (!cellEditingInProgress && e.code === 'Delete') {
             vscode.postMessage({ action: 'execute.deleteselected'});
-            // const selRows = gridApi.getSelectedRows(); // Los {filename, line, ...} 
-            // deleteSelectedRows();
-            // TODO: REHACER 
         }
     };
 }
