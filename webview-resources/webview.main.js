@@ -90,9 +90,7 @@ function createBookmarkGrid() {
     // API opciones https://www.ag-grid.com/javascript-data-grid/column-properties/
     var gridOptions = {
         overlayNoRowsTemplate: '<div style="font-style: italic;">No bookmarks to show. Create bookmarks using the bar button, the context menu on the line number or using the key combination (ALT+K+K by default).</div>',
-        defaultColDef: {
-            sortable: false
-        },        
+        defaultColDef: { sortable: false },        
         columnDefs: [
             { 
                 headerName: 'Bookmark', field: 'name', 
@@ -111,12 +109,15 @@ function createBookmarkGrid() {
                 }
             },
             { 
-                headerName: 'Line Number', field: 'line',
+                headerName: 'Line',
+                field: 'line',
                 valueGetter: (args) => { return args.data.line+1; },
-                width: 90
+                width: 60
             },            
             { 
-                headerName: 'File Location', field: 'filename',
+                headerName: 'File Location',
+                field: 'filename',
+                cellClass: 'filename-col',
                 flex: 1
             },
             { 

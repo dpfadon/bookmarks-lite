@@ -170,7 +170,7 @@ export function activate(context: vscode.ExtensionContext) {
         updateLineDecorations();
     }));
 
-    // EVENTO al EDITAR 
+    // EVENTO: al EDITAR 
     context.subscriptions.push(vscode.workspace.onDidChangeTextDocument((event) => {
         // Confirmar si estamos en el fichero activo y confirmar si el fichero activo tiene bookmarks
         // https://code.visualstudio.com/api/references/vscode-api#TextDocumentContentChangeEvent
@@ -222,7 +222,7 @@ export function activate(context: vscode.ExtensionContext) {
         }
     }));    
 
-    // EVENTO al CAMBIAR EL NOMBRE DE UN DOC
+    // EVENTO: al CAMBIAR EL NOMBRE DE UN DOC
     context.subscriptions.push(vscode.workspace.onDidRenameFiles((event) => {
         if (event.files) {
             event.files.forEach(file => { gs.onRenameFile(file); }); 
@@ -231,7 +231,7 @@ export function activate(context: vscode.ExtensionContext) {
         updateViewList();
     }));
 
-    // Al borrar
+    // EVENTO: Al borrar
     context.subscriptions.push(vscode.workspace.onDidDeleteFiles((event) => {
         if (event.files) {
             event.files.forEach(file => { gs.onDeleteFile(file); }); 

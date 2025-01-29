@@ -71,13 +71,11 @@ export class GlobalStatus {
     }    
 
     public setFocus(index: number) {
-//debugger;
         const vsbstate: any = this.getState();
         vsbstate.focus = index;
     }
 
     public focusNext() {
-//debugger;
         const vsbstate: any = this.getState();
         vsbstate.focus++;
         if (vsbstate.focus>=vsbstate.lines.length) {
@@ -86,7 +84,6 @@ export class GlobalStatus {
         this.setState(vsbstate);
     }
     public focusPrev() {
-//bugger;
         const vsbstate: any = this.getState();
         vsbstate.focus--;
         if (vsbstate.focus < 0) {

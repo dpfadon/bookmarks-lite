@@ -35,7 +35,7 @@ body {
 }
 .btn-item {
    display: inline-block;
-   margin: 0rem 0rem;
+   margin: 0rem 0.2rem;
    cursor: pointer;
    img {
       width: 15px;
@@ -70,6 +70,9 @@ body {
    margin-right: 0.4rem;
    filter: grayscale(100%);
 }
+.focused-row-icon {
+   filter: unset;
+}
 .row-button {
    /*height: 1.1rem;
    position: relative;
@@ -81,6 +84,10 @@ body {
    &:hover {
       filter: brightness(2);
    }
+}
+.filename-col {
+   text-align: right;
+   direction: rtl;
 }
 
 .editable-item {
