@@ -9,7 +9,7 @@ This is a **Visual Studio Code** extension for **creating and managing bookmarks
 - You can choose between **different icons** (you can use a heart :D)
 - **keyboard shortcuts**
 
-![Alt text](./img/readme/example1.jpg)
+![Alt text](./img/readme/panelexample.jpg)
 
 ## Usage
 

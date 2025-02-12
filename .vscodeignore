@@ -12,3 +12,5 @@ node_modules/**
 tmp/
 DEV/
 out/test
+img/readme
+img/deprecated
