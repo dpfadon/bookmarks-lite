@@ -117,7 +117,7 @@ export class BookmarksLiteViewProvider implements vscode.WebviewViewProvider {
 
                             <div class="input-item">
                                 <div class="check-box-field" id="autoOpenListCheck">
-                                    <label>Auto Open List:</label>
+                                    <label>Auto Open Panel:</label>
                                     <div class="check-box"></div>
                                 </div>
                             </div>
