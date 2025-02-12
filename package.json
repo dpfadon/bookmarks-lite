@@ -1,7 +1,7 @@
 {
   "name": "bookmarks-lite",
   "displayName": "bookmarks-lite",
-  "description": "Adds bookmark functionality similar to what you can use in visual studio",
+  "description": "This is a VSCode extension for creating and managing bookmarks in the easiest way. It is inspired by the visual studio bookmarks list.",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.84.0"
@@ -12,57 +12,165 @@
   "activationEvents": [
     "onStartupFinished"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://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@github.com/dpfadon/bookmarks-lite.git"
+  },  
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
-      { "command": "bookmarks-lite.toggle", "title": "Toggle Bookmark in Editor Line", "icon": "$(bookmark)" },
-      { "command": "bookmarks-lite.next", "title": "Navigate to Next", "icon": "$(triangle-right)" },
-      { "command": "bookmarks-lite.prev", "title": "Navigate to Previous", "icon": "$(triangle-left)" },
-      { "command": "bookmarks-lite.deleteselected", "title": "Delete Selected Bookmark", "icon": "$(trash)" },
-      { "command": "bookmarks-lite.contextual.deletebookmark", "title": "Delete this Bookmark" },
-      { "command": "bookmarks-lite.contextual.gotobookmark", "title": "Navigate to this Bookmark" },
-      { "command": "bookmarks-lite.contextual.linetoggle", "title": "Toggle Bookmark" },
-      { "command": "bookmarks-lite.contextual.showList", "title": "Show Bookmarks List View" }
+      {
+        "command": "bookmarks-lite.toggle",
+        "title": "Toggle Bookmark in Editor Line",
+        "icon": "$(bookmark)"
+      },
+      {
+        "command": "bookmarks-lite.next",
+        "title": "Navigate to Next",
+        "icon": "$(triangle-right)"
+      },
+      {
+        "command": "bookmarks-lite.prev",
+        "title": "Navigate to Previous",
+        "icon": "$(triangle-left)"
+      },
+      {
+        "command": "bookmarks-lite.deleteselected",
+        "title": "Delete Selected Bookmark",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "bookmarks-lite.contextual.deletebookmark",
+        "title": "Delete this Bookmark"
+      },
+      {
+        "command": "bookmarks-lite.contextual.gotobookmark",
+        "title": "Navigate to this Bookmark"
+      },
+      {
+        "command": "bookmarks-lite.contextual.linetoggle",
+        "title": "Toggle Bookmark"
+      },
+      {
+        "command": "bookmarks-lite.contextual.showList",
+        "title": "Show Bookmarks List View"
+      }
     ],
     "keybindings": [
-      { "command": "bookmarks-lite.toggle", "key": "alt+k alt+k", "when": "editorTextFocus" },
-      { "command": "bookmarks-lite.next", "key": "alt+k alt+l", "when": "editorTextFocus" },
-      { "command": "bookmarks-lite.prev", "key": "alt+k alt+j", "when": "editorTextFocus" }
+      {
+        "command": "bookmarks-lite.toggle",
+        "key": "alt+k alt+k",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "bookmarks-lite.next",
+        "key": "alt+k alt+l",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "bookmarks-lite.prev",
+        "key": "alt+k alt+j",
+        "when": "editorTextFocus"
+      }
     ],
     "menus": {
       "view/title": [
-        { "command": "bookmarks-lite.next", "when": "view == bookmarks-lite.list", "group": "navigation@04" },
-        { "command": "bookmarks-lite.prev", "when": "view == bookmarks-lite.list", "group": "navigation@03" },
-        { "command": "bookmarks-lite.deleteselected", "when": "view == bookmarks-lite.list", "group": "navigation@02" },
-        { "command": "bookmarks-lite.toggle", "when": "view == bookmarks-lite.list", "group": "navigation@01" }
+        {
+          "command": "bookmarks-lite.next",
+          "when": "view == bookmarks-lite.list",
+          "group": "navigation@04"
+        },
+        {
+          "command": "bookmarks-lite.prev",
+          "when": "view == bookmarks-lite.list",
+          "group": "navigation@03"
+        },
+        {
+          "command": "bookmarks-lite.deleteselected",
+          "when": "view == bookmarks-lite.list",
+          "group": "navigation@02"
+        },
+        {
+          "command": "bookmarks-lite.toggle",
+          "when": "view == bookmarks-lite.list",
+          "group": "navigation@01"
+        }
       ],
       "webview/context": [
-        { "command": "bookmarks-lite.next", "when": "webviewId == 'bookmarks-lite.list'", "group": "xxx@02" },
-        { "command": "bookmarks-lite.prev", "when": "webviewId == 'bookmarks-lite.list'", "group": "xxx@01" },
-        { "command": "bookmarks-lite.contextual.gotobookmark", "when": "webviewId == 'bookmarks-lite.list' && webviewSection == 'bookmark'", "group": "yyy@02" },
-        { "command": "bookmarks-lite.contextual.deletebookmark", "when": "webviewId == 'bookmarks-lite.list' && webviewSection == 'bookmark'", "group": "yyy@01" }
+        {
+          "command": "bookmarks-lite.next",
+          "when": "webviewId == 'bookmarks-lite.list'",
+          "group": "xxx@02"
+        },
+        {
+          "command": "bookmarks-lite.prev",
+          "when": "webviewId == 'bookmarks-lite.list'",
+          "group": "xxx@01"
+        },
+        {
+          "command": "bookmarks-lite.contextual.gotobookmark",
+          "when": "webviewId == 'bookmarks-lite.list' && webviewSection == 'bookmark'",
+          "group": "yyy@02"
+        },
+        {
+          "command": "bookmarks-lite.contextual.deletebookmark",
+          "when": "webviewId == 'bookmarks-lite.list' && webviewSection == 'bookmark'",
+          "group": "yyy@01"
+        }
       ],
       "editor/lineNumber/context": [
-        { "command": "bookmarks-lite.contextual.linetoggle" },
-        { "command": "bookmarks-lite.contextual.showList" }
+        {
+          "command": "bookmarks-lite.contextual.linetoggle"
+        },
+        {
+          "command": "bookmarks-lite.contextual.showList"
+        }
       ],
       "commandPalette": [
-        { "command": "bookmarks-lite.contextual.linetoggle", "when": "false" },
-        { "command": "bookmarks-lite.contextual.showList", "when": "false" }
+        {
+          "command": "bookmarks-lite.contextual.linetoggle",
+          "when": "false"
+        },
+        {
+          "command": "bookmarks-lite.contextual.showList",
+          "when": "false"
+        }
       ],
       "editor/context": [
-        { "submenu": "bookmarks-lite.editor/context", "group": "bookmarkslite" }
+        {
+          "submenu": "bookmarks-lite.editor/context",
+          "group": "bookmarkslite"
+        }
       ],
       "bookmarks-lite.editor/context": [
-        { "command": "bookmarks-lite.toggle", "when": "editorTextFocus", "group": "bookmarkslite@01" },
-        { "command": "bookmarks-lite.contextual.showList", "when": "editorTextFocus", "group": "bookmarkslite@04" },
-        { "command": "bookmarks-lite.next", "when": "editorTextFocus", "group": "bookmarkslite@02" },
-        { "command": "bookmarks-lite.prev", "when": "editorTextFocus", "group": "bookmarkslite@03" }
+        {
+          "command": "bookmarks-lite.toggle",
+          "when": "editorTextFocus",
+          "group": "bookmarkslite@01"
+        },
+        {
+          "command": "bookmarks-lite.contextual.showList",
+          "when": "editorTextFocus",
+          "group": "bookmarkslite@04"
+        },
+        {
+          "command": "bookmarks-lite.next",
+          "when": "editorTextFocus",
+          "group": "bookmarkslite@02"
+        },
+        {
+          "command": "bookmarks-lite.prev",
+          "when": "editorTextFocus",
+          "group": "bookmarkslite@03"
+        }
       ]
     },
     "submenus": [
-      { "id": "bookmarks-lite.editor/context", "label": "Bookmarks lite" }
-    ],    
+      {
+        "id": "bookmarks-lite.editor/context",
+        "label": "Bookmarks lite"
+      }
+    ],
     "views": {
       "bookmarks-list": [
         {
@@ -90,19 +198,14 @@
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js",
     "watchscss": "sass --watch --no-source-map src/scss:webview-resources",
-
-
-    "esbuild-minify":"esbuild ./src/extension.ts --bundle --outfile=bundled/extension.js --external:vscode --format=cjs --platform=node --minify",
-
-    
+    "esbuild-minify": "esbuild ./src/extension.ts --bundle --outfile=bundled/extension.js --external:vscode --format=cjs --platform=node --minify",
     "vscode:prepublish.XXX": "npm run esbuild-base -- --minify",
     "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node",
     "esbuild": "npm run esbuild-base -- --sourcemap",
     "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
     "test-compile": "tsc -p ./",
-    "copy-library": "cpy node_modules/ag-grid-community/styles/ag-grid.min.css webview-resources/ag-grid --flat && cpy node_modules/ag-grid-community/dist/ag-grid-community.min.noStyle.js webview-resources/ag-grid --flat"
+    "copy-library": "cpy node_modules/ag-grid-community/styles/ag-grid.min.css webview-resources/ag-grid --flat && cpy node_modules/ag-grid-community/dist/ag-grid-community.min.noStyle.js webview-resources/ag-grid --flat && cpy node_modules/umbrellajs/umbrella.min.js webview-resources/umbrella --flat"
   },
-
   "devDependencies": {
     "@types/mocha": "^10.0.3",
     "@types/node": "18.x",
@@ -119,6 +222,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "ag-grid-community": "^31.0.1"
+    "ag-grid-community": "^31.0.1",
+    "umbrellajs": "^3.3.3"
   }
 }

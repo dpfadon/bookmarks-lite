@@ -1,12 +1,19 @@
 import * as vscode from 'vscode';
 
+/*
+[GlobalStatus.ts]
+- define bookmarkState, bookmarkInfo y GlobalStatus.
+- Al construirse recibe el vscode.ExtensionContext. Luego el getState() trae la info guardada del this.context.workspaceState. setState() la guarda.
+- tiene info para actualizar y modificar la info de los bookmark y para guardar y extraer esta info del contexto
+*/
+
 // DTOs ---------------------------------
 export class bookmarkState {
-    // Indice de la linea con el foco (el ultimo bookmark al que hemos navegado, desde el que navegamos si hacemos next o prev)
-    focus: number = -1; 
-    lines: bookmarkInfo[] = [];
-    selectedIcon = 2;
-    selection: any[] = [];
+    focus: number = -1; // FOCO: Indice de linea. El ultimo bookmark al que hemos navegado, desde el que navegamos si hacemos next o prev
+    lines: bookmarkInfo[] = []; // Lista de bookmarks
+    selectedIcon = 2; // Icono seleccionado para los bookmarks
+    selection: any[] = []; // lineas seleccionadas en la lista
+    showListOnAction = true; // Muestra la lista de bookmarks al hacer algo con las bookmarks
 }
 export class bookmarkInfo {
     constructor(
@@ -92,6 +99,15 @@ export class GlobalStatus {
         this.setState(vsbstate);
     }
 
+    public setShowListOnAction(showListOnAction: number) {
+        const vsbstate: any = this.getState();
+        vsbstate.showListOnAction = showListOnAction;
+        this.setState(vsbstate);
+    }   
+    public getShowListOnAction() {
+        return this.getState().showListOnAction;
+    } 
+    
     public setSelectedIcon(selectedIcon: number) {
         const vsbstate: any = this.getState();
         vsbstate.selectedIcon = selectedIcon;
@@ -99,7 +115,7 @@ export class GlobalStatus {
     }   
     public getSelectedIcon() {
         return this.getState().selectedIcon;
-    }        
+    }     
 
     public getFocusedBookmark() {
         const vsbstate: any = this.getState();
@@ -157,7 +173,7 @@ export class GlobalStatus {
     public getSelected() { return this.getState().selection; }
 
     public deleteSelectedAndUpdateSelection() {
-        const vsbstate: any = this.getState();
+        // const vsbstate: any = this.getState();
         const lines = this.getState().lines;
         const selectedItems: any = this.getSelected();
         if (selectedItems && selectedItems.length > 0) {

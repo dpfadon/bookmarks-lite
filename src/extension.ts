@@ -4,43 +4,53 @@ import * as vscode from 'vscode';
 import { BookmarksLiteViewProvider } from './BookmarksLiteViewProvider';
 import { GlobalStatus, bookmarkInfo } from './GlobalStatus';
 
+/*
+[extension.ts]
+- Core de la extensión. exporta una función "activate" y "deactivate"
+- inicializa: 
+    - Crea los "textEditorDecorationType" con los iconos y colores en la barra de scroll
+    - Crea un GlobalStatus
+    - pinta las deco del fich actual
+- Registra los COMANDOS, algunos publicos y otros internos
+    Estos comandos actuan sobre gs, sobre vscode.window.activeTextEditor, vscode.window, vsbprovider, etc;
+- Registra manejadores de EVENTOS
+    al cambiar de ventana activa, actualizar los deco, al editar actualiza los bookmark, al cambiar de nombre o borrar un fichero, etc
+- Crea un vsbprovider =  new BookmarksLiteViewProvider()
+*/
+
+
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-    // ---------------------------------
-    // TIPS: 
-	// console.log('Congratulations, ...!');
+    // INIT ------------------------------------------------------------------------------------------------------------ 
 
-    // ---------------------------------
-    //
-    // DOC: deco render options : https://code.visualstudio.com/api/references/vscode-api#DecorationRenderOptions
-    // DOC: Los colores: https://code.visualstudio.com/api/references/theme-color
-
-    let bookmarkDecoType1 = vscode.window.createTextEditorDecorationType({
+    // Creamos los tipos de decoraciones
+    let bookmarkDecoType1 = vscode.window.createTextEditorDecorationType({ // Bookmark amarillo
         gutterIconPath: context.asAbsolutePath('img\\bookmarkicon1.svg').split('\\').join('/'),
         gutterIconSize: 'contain',
         overviewRulerLane: vscode.OverviewRulerLane.Left,
         overviewRulerColor: 'rgba(240, 199, 0, 0.7)',
     });
-    let bookmarkDecoType2 = vscode.window.createTextEditorDecorationType({
+    let bookmarkDecoType2 = vscode.window.createTextEditorDecorationType({ // Estrella amarilla
         gutterIconPath: context.asAbsolutePath('img\\bookmarkicon2.svg').split('\\').join('/'),
         gutterIconSize: 'contain',
         overviewRulerLane: vscode.OverviewRulerLane.Left,
         overviewRulerColor: 'rgba(240, 199, 0, 0.7)',
     });
-    let bookmarkDecoType3 = vscode.window.createTextEditorDecorationType({
+    let bookmarkDecoType3 = vscode.window.createTextEditorDecorationType({ // Corazon rojo
         gutterIconPath: context.asAbsolutePath('img\\bookmarkicon3.svg').split('\\').join('/'),
         gutterIconSize: 'contain',
         overviewRulerLane: vscode.OverviewRulerLane.Left,
         overviewRulerColor: 'rgba(240, 199, 0, 0.7)',
-    });    
-
+    });
+    // Creamos el objeto que guarda el estado global
     const gs = new GlobalStatus(context);
+    // Actualizamos las decoraciones por primera vez
+    updateLineDecorations();
 
-    // gs.setState(new bookmarkState()); // Descomentando esto reseteamos la extensión
 
-    // COMMANDS ---------------------- ---------------------- ---------------------- ---------------------- 
+    // COMMANDS ------------------------------------------------------------------------------------------------------------ 
     
     let disposable: vscode.Disposable;
 
@@ -60,13 +70,17 @@ export function activate(context: vscode.ExtensionContext) {
 
     // next
     disposable = vscode.commands.registerCommand('bookmarks-lite.next', () => {
+        showListIfAutoShow();
         gs.focusNext();
         const bookmark = gs.getFocusedBookmark();
         openBookmarkDocument(bookmark);
         selectFocusedInViewList();
     });
     context.subscriptions.push(disposable);
+
+    // Prev
     disposable = vscode.commands.registerCommand('bookmarks-lite.prev', () => {
+        showListIfAutoShow();
         gs.focusPrev();
         const bookmark = gs.getFocusedBookmark();
         openBookmarkDocument(bookmark);
@@ -76,11 +90,11 @@ export function activate(context: vscode.ExtensionContext) {
 
     // show
     disposable = vscode.commands.registerCommand('bookmarks-lite.show', (index: number) => {
+        showListIfAutoShow();
         // Abre el documento de ese bookmark y manda el cursor a donde toca
         gs.setFocus(index);
         const bookmark = gs.getFocusedBookmark();
         openBookmarkDocument(bookmark);
-
         updateViewList();
         selectFocusedInViewList();
         /*gs.toggleBookmark(fsPath, lineNumber);
@@ -100,6 +114,7 @@ export function activate(context: vscode.ExtensionContext) {
     // Delete (selected en list)
     disposable = vscode.commands.registerCommand('bookmarks-lite.deleteselected', () => {
         const deleteaction = () => {
+            showListIfAutoShow();
             gs.deleteSelectedAndUpdateSelection();
             updateLineDecorations();
             updateViewList();
@@ -126,26 +141,25 @@ export function activate(context: vscode.ExtensionContext) {
     });
     context.subscriptions.push(disposable);
 
-    // Contextual desde el numero de linea
-    disposable = vscode.commands.registerCommand('bookmarks-lite.contextual.linetoggle', (contextualInfo,xx,yy) => {
+    // DOC: acerca de los comandos contextuales: donde se puede contribuir? https://code.visualstudio.com/api/references/contribution-points
+
+    // linetoggle: Contextual desde el numero de linea
+    disposable = vscode.commands.registerCommand('bookmarks-lite.contextual.linetoggle', (contextualInfo) => {
         let fsPath = contextualInfo.uri.fsPath; // https://code.visualstudio.com/api/references/vscode-api#Uri
         let lineNumber = contextualInfo.lineNumber-1;
-        /*gs.toggleBookmark(fsPath, lineNumber);
-        updateLineDecorations();
-        updateViewList();*/
         toggleBookmark(fsPath, lineNumber);
     });
     context.subscriptions.push(disposable);
+
+    // showList: Contextual desde el numero de linea
     disposable = vscode.commands.registerCommand('bookmarks-lite.contextual.showList', (contextualInfo) => {
         vscode.commands.executeCommand('bookmarks-lite.list.focus');
-        /*setTimeout(()=>{
-            // TODO:
-        },100);*/
     });
     context.subscriptions.push(disposable);      
 
-    // Go to bookmark
+    // Go to bookmark: Contextual desde el numero de linea
     disposable = vscode.commands.registerCommand('bookmarks-lite.contextual.gotobookmark', (contextualInfo) => {
+        showListIfAutoShow();
         gs.setFocus( gs.getIndexOf(contextualInfo.data.filename, contextualInfo.data.line) );
         const bookmark = gs.getFocusedBookmark();
         openBookmarkDocument(bookmark);
@@ -153,19 +167,23 @@ export function activate(context: vscode.ExtensionContext) {
     });
     context.subscriptions.push(disposable);
 
+    // Actualize icon (establece icono y actualiza decoraciones)
     disposable = vscode.commands.registerCommand('bookmarks-lite.actualizeicon', (contextualInfo) => {
         gs.setSelectedIcon(contextualInfo);
         updateLineDecorations();
     });
     context.subscriptions.push(disposable);    
 
-    // VISTAS ----------------------------------------------------------------------------------
+
+
+    // VISTAS  ------------------------------------------------------------------------------------------------------------ --------------------------------- 
     const vsbprovider = new BookmarksLiteViewProvider(context.extensionUri, gs);
     const subscr = context.subscriptions.push(vscode.window.registerWebviewViewProvider('bookmarks-lite.list', vsbprovider));
+    // TODO: subscr ¿?
 
-    // EVENTOS ------------------------------------------------------------------------------------------------------------
+    // EVENTOS ------------------------------------------------------------------------------------------------------------ --------------------------------- 
 
-    // Al cambiar de fichero activo
+    // EVENTO: Al cambiar de fichero activo
     context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor((editor) => {
         updateLineDecorations();
     }));
@@ -231,7 +249,7 @@ export function activate(context: vscode.ExtensionContext) {
         updateViewList();
     }));
 
-    // EVENTO: Al borrar
+    // EVENTO: Al BORRAR
     context.subscriptions.push(vscode.workspace.onDidDeleteFiles((event) => {
         if (event.files) {
             event.files.forEach(file => { gs.onDeleteFile(file); }); 
@@ -241,11 +259,15 @@ export function activate(context: vscode.ExtensionContext) {
     }));           
 
 
-    // ----------------------------------------------------------------------------------------------------
+    
+    // MÉTODOS USADOS POR LOS EVENTOS Y LOS COMANDOS ----------------------------------------------------------------------------------------------------
 
-    updateLineDecorations(); // Ponemos las decoraciones por primera vez
-
-    // ----------------------------------------------------------------------------------------------------
+    function showListIfAutoShow() {
+        if (gs.getShowListOnAction()) {
+            vsbprovider.openView();
+            // vscode.commands.executeCommand('bookmarks-lite.list.focus'); // No porque esto manda el foco
+        }
+    }
 
     function updateLineDecorations() {
         const activeTextEditor = vscode.window.activeTextEditor;
@@ -288,158 +310,34 @@ export function activate(context: vscode.ExtensionContext) {
     }
 
     function toggleBookmark(fsPath: string, lineNumber: number) {
+        showListIfAutoShow();
         gs.toggleBookmark(fsPath, lineNumber);
         updateLineDecorations();
         updateViewList();
         selectFocusedInViewList(); // toggle cambia el foco y hay que reflejarlo en la lista
     }
 
-
-
-    // ---------------------------------
-
-        // Navegamos entre bookmarks (ir al siguiente / anterior) 
-    // Comando para listar los bookmarks ¿?
-    // Generamos una vista webview con la lista de los bookmarks desde la que operar todo esto
-    // Folders como los de VS ¿? 
-    // Enable / disable bookmarks ¿?
-
-    // Para el icono https://github.com/microsoft/vscode-extension-samples/blob/main/decorator-sample/USAGE.md
-    //               https://stackoverflow.com/questions/62375509/setting-icons-before-line-number-in-vscode
-                    // https://code.visualstudio.com/api/references/vscode-api
-                    // https://github.com/alefragnani/vscode-bookmarks/blob/master/src/extension.ts
-                    // https://github.com/microsoft/vscode/issues/12111
-
-    // Sobre el global storage :: https://code.visualstudio.com/api/extension-capabilities/common-capabilities
-    // Sobre como meter keybindings https://code.visualstudio.com/api/references/contribution-points#contributes.keybindings
-
-    // Sobre webviews https://code.visualstudio.com/api/references/vscode-api#WebviewViewProvider
-    //      ojo ejemplo  https://github.com/microsoft/vscode-extension-samples/blob/main/webview-view-sample/src/extension.ts
-
-    // API :   https://code.visualstudio.com/api/references/vscode-api#scm
-    //         https://code.visualstudio.com/api/references/activation-events
-
-
-    /*
-
-    TODO: 
-
-    [X] permitir cambiar el icono de la fila entre estrella o bookmark
-    [X] Icono con color en la lista
-    [X] repasar tema delete
-    [X] Problema delete pulsando boton se seguido si pulso demasiado rápido.
-    [X] Borrar una detrás de otra pulsando el botón (seleccionar la siguiente)
-    ( [X] Poner la X tan satisfactoria )
-    [X] Falta icono de la vista
-    [N] Icono correcto columna num de fila. O se hace con un HACK o se pone según el theme (oscuro/luminoso)
-        [N] Probar el hack
-        [N] hacer según el theme
-    [X] Renombrar a bookmarks-lite
-    [X] Organizar bien los fuentes. Que se hace con las librerías, que se hace con el css sass...
-    [ ] menus
-        [X] menu Contextual sobre el numero de linea "add bookmark"
-            donde se puede contribuir> https://code.visualstudio.com/api/references/contribution-points
-        [ ] Opcion para mostrar vista de bookmarks. No parece que se puedan añadir cosas al menú superior
-        [ ] Otros menús
-    [X] Tests compatibilidad con otras decoraciones y librerías
-    [ ] Publicar.. ¿?
-        
-        ( ) Instalar como paquetes para que el bundle sea menor ? https://www.ag-grid.com/javascript-data-grid/packages-modules/
-    [ ] Repaso a los iconos en los botones de la vista.
-    ( [  ] permitir recolocar arrastrando )
-    [ ] Test: revisar que se hace con el index
-
-    ------------------------------------------------------------------------------------------------------------------------------------------------
-
-    "Due to limitations in the gutter API, it's impossible to have multiple gutters for the line one code, so it may overlap other extensions which use gutters or conflict with breakpoint functionality."
-
-    ------------------------------------------------------------------------------------------------------------------------------------------------
-
-    hay una instancia de GlobalStatus que se anda usando para trabajar con los bookmark a bajo nivel
-    bookmarks-lite.toggle -->
-        comando definido en extension.ts
-        ejecutado desde botón que se define en el   contributes.commands, contributes.keybindings y contributes.menus (menu de la vista)
-    bookmarks-lite.next y .prev --> 
-        comando definido en extension.ts
-        ejecutado desde botón que se define en el   contributes.commands, contributes.keybindings, contributes.menus.view/title + *.webview/context (menu de la vista y contextual)
-        actualiza, abre el doc, etc, y al final llama a vsbprovider.selectFocused(); (el provider puede acceder a la vista interior y hacer un postMessage() )
-    Se llama al command "bookmarks-lite.deleteselected"  (desde el menu de la vista, sale xq en la vista están las filas seleccionadas)
-        [deprecated]
-        Eso llama al proveedor de la vista (vsbprovider.deleteSelected(gs)) que a su vez manda un message a la vista ( this.view.webview.postMessage({ type:'deleteSelected', state:gs.getState() }); )
-        En webview.main.js se recibe el mensaje y se hace un setGlobalState() actualizando y haciendo un deleteSelectedRows()
-        Ese deleteSelectedRows de la vista manda un mensaje a su vez hacia arriba (vscode.postMessage({ action: 'delete-bookmarks', bookmarks: selRows}); )
-        Ese mensaje lo recoge el webview.ts Y eso lanza un vscode.commands.executeCommand('bookmarks-lite.deleteone', bookmark.filename, bookmark.line);  
-        Ese comando hace un toggleBookmark y al final hace un updateViewList que llama al vsbprovider.updateList(gs) y eso hace un postmessage de type:'updateList' a la vista. 
-        la vista guarda la selección, borra el grid, lo rellena, le mete las filas y recupera la selección
-        --------------
-        Propuesta simplificación: 
-    Se llama al command "bookmarks-lite.deleteselected"        
-        Al seleccionar en la lista esta manda lo seleccionado para arriba siempre. Guardamos los filename y line en el estado.
-        ( La idea es simplificar el proceso y además independizar de la lista el proceso de borrado para que el repintado no afecte )
-        hacemos en el comando un toggleBookmark(), recalculamos la selección y luego refrescamos los iconos y la lista y la selección ahora la coge del estado
-
-
-    ------------------------------------------------------------------------------------------------------------------------------------------------
-
-    [X] Nombres de bookmark automáticos
-    [X] Que funcione el añadir lineas delante y detrás y el borrar líneas
-    [X] Que funcione el renombrar ficheros y el borrar ficheros
-        [N] Si renombro o borro fuera del vscode? --> que al intentar abrir un bookmark se borre si no existe el fichero
-    [X] Que la lista sea con selección de fila (buscar algo hecho muy muy lite ¿?)
-        https://code.tutsplus.com/best-javascript-free-and-open-source-data-grid-libraries-and-widgets--cms-93523t
-            https://github.com/ag-grid/ag-grid
-        https://blog.logrocket.com/5-open-source-javascript-datagrids/
-        [X] Lista con cabecera fija, body con scroll
-            [X] Estilos VSCODE 
-                [X] para cualquier situación
-            [N] Selección no seleccione la celda 
-            [X] Supr permita borrar el bookmark
-                [X] Borrado multiple
-            [X] Filtros de columna simples
-                [X] Filtro rápido --> https://www.ag-grid.com/javascript-data-grid/filter-quick/
-            [N] Que no recoloque las columnas
-            [NEXT VERSION] Que recoloque bookmarks
-        [X] Doble click en la lista o similar te mande al bookmark
-        [X] Click simple permita editar el nombre del bookmark
-        [X] Botón de borrar (multiple)
-            https://code.visualstudio.com/api/ux-guidelines/panel
-            https://code.visualstudio.com/api/references/contribution-points#contributes.menus
-            https://code.visualstudio.com/api/references/icons-in-labels#icon-listing
-        [X] Botón de sig / anterior. Que marque en la lista el que se hace foco
-        [X] Arreglar el icono de la vista: https://code.visualstudio.com/api/references/contribution-points#contributes.viewsContainers
-            y el icono del lateral: https://www.svgrepo.com/svg/526487/bookmark-square-minimalistic – you must give appropriate credit, provide a link to the license, and indicate if changes were made
-        [X] menu contextual webview
-            https://stackoverflow.com/questions/70788421/context-menu-copy-is-not-working-in-vscode-webview-but-ctrlc-is-working-fine
-            https://code.visualstudio.com/api/extension-guides/webview
-            [X] navegar
-            [X] Borrar
-        [X] Formato lista
-            [X] Icono en la lista   https://fontello.com/
-            [X] Formato nums
-
-    [ ] Icono correcto 
-        [X] vista bookmarks
-        [ ] Icono correcto en el borde, colores correctos zona numeros de linea.
-            me gustaría usar colores del tema para el icono de la linea pero 
-                parece que solo puedo usar una imagen. Si uso un SVG podría hacerlo pero si metiera estilos css que parece que no puedo.
-            Tampoco parece que me deje meter un before o un after.
-            Lo único que parece que puedo hacer es elegir un icono para los temas dark y otro para los light
-
-    ( ) optimizar la estructura de los bookmarks ¿? indexar por fichero
-    [ ] Recolocar el orden
-    [ ] menus
-        [ ] menu Contextual sobre el numero de linea
-        [ ] Opcion para mostrar vista de bookmarks. View toggle xxxxx
-    [ ] compatibilidad con otras decoraciones y librerías, ej: con el signo de breakpoint
-    [ ] Publicar.. 
-        ( ) Instalar como paquetes para que el bundle sea menor https://www.ag-grid.com/javascript-data-grid/packages-modules/
-
-        
-
-    */
 }
-
-
 
 // This method is called when your extension is deactivated
 export function deactivate() {}
+
+/*
+    DOC: 
+        // Sobre el global storage :: https://code.visualstudio.com/api/extension-capabilities/common-capabilities
+        // Sobre como meter keybindings https://code.visualstudio.com/api/references/contribution-points#contributes.keybindings
+        // Sobre webviews https://code.visualstudio.com/api/references/vscode-api#WebviewViewProvider
+        //   ojo ejemplo  https://github.com/microsoft/vscode-extension-samples/blob/main/webview-view-sample/src/extension.ts
+        // API :   https://code.visualstudio.com/api/references/vscode-api#scm
+        //         https://code.visualstudio.com/api/references/activation-events
+
+    // DOC: deco render options : https://code.visualstudio.com/api/references/vscode-api#DecorationRenderOptions
+        // DOC: Los colores: https://code.visualstudio.com/api/references/theme-color
+        /*
+        // DOC: Para el icono https://github.com/microsoft/vscode-extension-samples/blob/main/decorator-sample/USAGE.md
+            // https://stackoverflow.com/questions/62375509/setting-icons-before-line-number-in-vscode
+            // https://code.visualstudio.com/api/references/vscode-api
+            // https://github.com/alefragnani/vscode-bookmarks/blob/master/src/extension.ts
+            // https://github.com/microsoft/vscode/issues/12111
+            
+*/

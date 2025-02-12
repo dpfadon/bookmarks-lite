@@ -1,6 +1,14 @@
 import * as vscode from 'vscode';
 import { GlobalStatus } from './GlobalStatus';
 
+/*
+[BookmarksLiteViewProvider.ts]
+- implementa WebviewViewProvider
+- en el resolveWebviewView() configura la webviewView 
+    - genera el html
+    - maneja el onDidReceiveMessage <-- mensajes del js de la VISTA HTML a esta view.
+        eso a su vez puede lanzar COMMANDS de la extensión o ejecutar this.view.webview.postMessage que van a la VISTA HTML
+*/
 
 // VISTA -------------------------- bookmarks-list
 export class BookmarksLiteViewProvider implements vscode.WebviewViewProvider {
@@ -9,11 +17,16 @@ export class BookmarksLiteViewProvider implements vscode.WebviewViewProvider {
         private readonly extensionUri: vscode.Uri,
         private gs: GlobalStatus
     ) { }
+
+    public openView() {
+       this.view?.show?.(true); // `show` is not implemented in 1.49 but is for 1.50 insiders
+    }
+
     public resolveWebviewView( webviewView: vscode.WebviewView, context: vscode.WebviewViewResolveContext, _token: vscode.CancellationToken ) {
         this.view = webviewView;
         webviewView.webview.options = { enableScripts: true }; // Allow scripts in the webview
         webviewView.webview.html = this.getHtml(webviewView.webview);
-        webviewView.webview.onDidReceiveMessage( // Mensaje de la VISTA al VSCODE
+        webviewView.webview.onDidReceiveMessage( // Mensajes de la VISTA HTML al VIEWPROVIDER
             (message: any) => {
                 if (message.action === 'ask-for-state') {
                     this.updateState(this.gs);
@@ -30,6 +43,8 @@ export class BookmarksLiteViewProvider implements vscode.WebviewViewProvider {
                 } else if (message.action === 'actualice-icon') {
                     vscode.commands.executeCommand('bookmarks-lite.actualizeicon', message.iconindex); // Esto actualiza el status y pinta los cambios en el editor
                     this.updateState(this.gs); // Esto ya pone el boton seleccionado adecuadamente en la vista
+                } else if (message.action === 'actualice-showListOnAction') {
+                    this.gs.setShowListOnAction(message.showListOnAction);
                 } else if (message.action === 'update-selection-from-view') {
                     this.gs.setSelected(message.selected);
                 }  else if (message.action === 'execute.deleteselected') {  // la webview quiere borrar los seleccionados
@@ -47,9 +62,10 @@ export class BookmarksLiteViewProvider implements vscode.WebviewViewProvider {
 
     public updateList(gs: GlobalStatus) {
         if (this.view) {
-            // Lo siguiente hace que se abra la lista de bookmarks sola 
+            // Lo siguiente hace que se abra la lista de bookmarks sola
             // this.view.show?.(true); // `show` is not implemented in 1.49 but is for 1.50 insiders
-            this.view.webview.postMessage({ type:'updateList', state:gs.getState() }); // Mensaje del VSCODE a la VISTA
+            const state = gs.getState();
+            this.view.webview.postMessage({ type:'updateList', state }); // Mensaje del VSCODE a la VISTA
             // https://code.visualstudio.com/api/extension-guides/webview#passing-messages-from-an-extension-to-a-webview
         }
     } 
@@ -88,8 +104,26 @@ export class BookmarksLiteViewProvider implements vscode.WebviewViewProvider {
                             </div>                            
                             <div class="btn-item" id="btn-useicon2">
                                 <img src="${webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'img', 'bookmarkicon2.svg'))}"/>
-                            </div>                            
+                            </div>
                             <div class="btn-separator" style="margin-left: 0.3rem;">&nbsp;</div>
+
+                            <!--
+                            <div class="btn-item">
+                                <label>Auto Open:</label>
+                                <input type="checkbox" id="auto-open-checkbox" onchange="onAutoOpenCheckboxChanged()"/>
+                            </div>
+                            <div class="btn-separator" style="margin-left: 0.3rem;">&nbsp;</div>
+                            -->
+
+                            <div class="input-item">
+                                <div class="check-box-field" id="autoOpenListCheck">
+                                    <label>Auto Open List:</label>
+                                    <div class="check-box"></div>
+                                </div>
+                            </div>
+
+                            <div class="btn-separator" style="margin-left: 0.3rem;">&nbsp;</div>
+
                             <label>Quick Filter:</label>
                             <input type="text" id="filter-text-box" placeholder="Filter bookmarks by any field..." oninput="onFilterTextBoxChanged()"/>
                         </div>
@@ -97,6 +131,7 @@ export class BookmarksLiteViewProvider implements vscode.WebviewViewProvider {
                             <div id="myGrid" style="height: 100%; width: 100%"></div>
                         </div>
                     </div>
+                    <script nonce="${nonce}" src="${webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'webview-resources/umbrella', 'umbrella.min.js'))}"></script>
                     <script> const imgBaseUri = '${webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'img'))}'; </script>
                     <script nonce="${nonce}" src="${webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'webview-resources/ag-grid', 'ag-grid-community.min.noStyle.js'))}"></script>
                     <script nonce="${nonce}" src="${webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'webview-resources', 'webview.main.js'))}"></script>

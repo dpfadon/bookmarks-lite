@@ -1,32 +1,45 @@
-# VS Code Bookmarks Extension
+# BOOKMARKS-LITE
 
-Esta extensión de Visual Studio Code proporciona la funcionalidad de crear y gestionar bookmarks en tu código.
+This is a **Visual Studio Code** extension for **creating and managing bookmarks** in the easiest way. It is **inspired by the visual studio bookmarks list**.
 
-## Características
+## Features
 
-- Crear bookmarks en líneas específicas de tu código.
-- Navegar a través de tus bookmarks.
-- Gestionar tus bookmarks, permitiéndote eliminar o mover bookmarks.
+- Bookmarks management using an **editable list** (will appear in a panel but can be dragged to the sidebar).
+- **Quick filter**.
+- You can choose between **different icons** (you can use a heart :D)
+- **keyboard shortcuts**
 
-## Uso
+![Alt text](./img/readme/example1.jpg)
 
-1. Instala la extensión en Visual Studio Code.
-2. Abre un archivo de código y navega a la línea que deseas marcar.
-3. Usa el comando `Toggle Bookmark` para crear un bookmark en la línea actual.
-4. Usa los comandos `Next Bookmark` y `Previous Bookmark` para navegar entre tus bookmarks.
-5. Usa el comando `Manage Bookmarks` para ver todos tus bookmarks y poder eliminar o mover los que desees.
+## Usage
 
-## Comandos
+- **Alt+k+k** (by default) to create a bookmark at the line selected by the cursor.
+- **Alt+l+l** / **Alt+j+j** (by default) to go to next/previous bookmark.
+- **Context menu** over the line / left gutter. 
+- **Doble click on list** to navigate, **Supr**. to delete (or just use the buttons).
+- single click on the name to edit.
 
-- `Toggle Bookmark`: Crea o elimina un bookmark en la línea actual.
-- `Next Bookmark`: Navega al siguiente bookmark.
-- `Previous Bookmark`: Navega al bookmark anterior.
-- `Manage Bookmarks`: Abre una vista con todos tus bookmarks.
+## Why
 
-## Contribuir
+As a software developer i love to use bookmarks to jump between the code files I'm working on at any given moment without having to remember anything. **I wanted to make a version with a more customized interface** and **more similar to the experience I have when using Visual Studio**. 
 
-Si tienes alguna sugerencia o encuentras algún problema, por favor crea un issue en el repositorio de GitHub.
+I also wanted to learn how to make VSCode extensions :D.
 
-## Licencia
+## Who
+Hi, my Name is Diego Pérez-Fadón Gutiérrez, i'm a software developer living in Spain. I hope you're doing fine and thank you for reading this :).
 
-Esta extensión está licenciada bajo [MIT License](LICENSE).
+## Contribute & Roadmap
+
+If you have any suggestions or find any bug, please create an issue in the GitHub repository. I have many ideas to improve this extension but first we have to fix any bugs that may emerge.
+
+## License
+
+BOOKMARKS-LITE is under **[GNU GPLv3](https://choosealicense.com/licenses/gpl-3.0/)**.
+(you can do almost anything you want with this project, except distributing closed source versions). 
+
+It uses 
+**[ag-grid-community](https://www.npmjs.com/package/ag-grid-community) ([MIT license](https://github.com/ag-grid/ag-grid/blob/HEAD/LICENSE.txt))**
+and
+**[umbrellajs](https://umbrellajs.com/) ([MIT License](https://github.com/franciscop/umbrella/blob/master/LICENSE))**
+
+--

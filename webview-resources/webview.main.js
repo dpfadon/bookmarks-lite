@@ -16,7 +16,7 @@ let gridApi = null;
 
 let cellEditingInProgress = false;
 
-// This script will be run within the webview itsel. It cannot access the main VS Code APIs directly.
+// Este script corre en la propia vista web, no en el contexto de vscode
 (function () {
     // Handle messages sent from the extension to the webview
     window.addEventListener('message', event => {
@@ -26,6 +26,7 @@ let cellEditingInProgress = false;
             case 'updateState': 
                 setGlobalState(message.state);
                 updateListWithState();
+                check_updateDom();
                 // focusSelected(); // No queda bien al borrar uno que vaya al ppo
                 break;
             case 'selectFocused':
@@ -36,6 +37,7 @@ let cellEditingInProgress = false;
         }
     });
     askForState();
+    check_initialize();
     createBookmarkGrid();
     createButtons();
     addGlobalEvents();
@@ -45,42 +47,39 @@ function askForState() {
     vscode.postMessage({ action: 'ask-for-state'}); // Esto lanza un 'ask-for-state' arriba, allí se retorna un 'updateState' para abajo que termina pintando la lista
 }
 
+function check_initialize() {
+    u('#autoOpenListCheck').on('click', ()=> {
+        globalstate.showListOnAction = !globalstate.showListOnAction; // No queremos acceder al global state directamente, lo delegamos a la webview provider
+        this.check_updateDom();
+        vscode.postMessage({ action: 'actualice-showListOnAction', showListOnAction: globalstate.showListOnAction }); // Lo captura en el webview provider
+    });
+    // check_updateDom(); // Si hacemos esto podemos encontrar que vale null
+}
+function check_updateDom() {
+    if (globalstate.showListOnAction) {
+        u('#autoOpenListCheck .check-box').addClass('checked');
+    } else {
+        u('#autoOpenListCheck .check-box').removeClass('checked');
+    }
+}
+
 function createButtons() {
-    const btn1elem = document.getElementById("btn-useicon1");
-    const btn2elem = document.getElementById("btn-useicon2");
-    const btn3elem = document.getElementById("btn-useicon3");
-    btn1elem.addEventListener('click', ()=> {
+    u("#btn-useicon1").on('click', ()=> {
         vscode.postMessage({ action: 'actualice-icon', iconindex: 1 }); // Lo captura en webview.ts
     });
-    btn2elem.addEventListener('click', ()=> {
-        vscode.postMessage({ action: 'actualice-icon', iconindex: 2 });
+    u("#btn-useicon2").on('click', ()=> {
+        vscode.postMessage({ action: 'actualice-icon', iconindex: 2 }); // Lo captura en webview.ts
     });
-    btn3elem.addEventListener('click', ()=> {
-        vscode.postMessage({ action: 'actualice-icon', iconindex: 3 });
+    u("#btn-useicon3").on('click', ()=> {
+        vscode.postMessage({ action: 'actualice-icon', iconindex: 3 }); // Lo captura en webview.ts
     });
     actualizeSelectedBtnFromState();
 }
 function actualizeSelectedBtnFromState() {
-    const btn1elem = document.getElementById("btn-useicon1");
-    const btn2elem = document.getElementById("btn-useicon2");
-    const btn3elem = document.getElementById("btn-useicon3");    
     const selIcon = stateGetSelectedIcon();
-    removeClassFromElem(btn1elem, 'btn-selected');
-    removeClassFromElem(btn2elem, 'btn-selected');
-    removeClassFromElem(btn3elem, 'btn-selected');
-    addClassToElem((selIcon===3 ? btn3elem : (selIcon===2?btn2elem:btn1elem)), 'btn-selected');
+    u('#btn-useicon1, #btn-useicon2, #btn-useicon3').removeClass('btn-selected');
+    u('#btn-useicon' + selIcon).addClass('btn-selected');
     updateListWithState();
-}
-
-function addClassToElem(elem, cls) {
-    if (!elem.classList.contains(cls)) {
-        elem.classList.add(cls);
-    }
-}
-function removeClassFromElem(elem, cls) {
-    if (elem.classList.contains(cls)) {
-        elem.classList.remove(cls);
-    }
 }
 
 function createBookmarkGrid() {
@@ -158,7 +157,6 @@ function createBookmarkGrid() {
     const eGridDiv = document.querySelector('#myGrid');
     gridApi = createGrid(eGridDiv, gridOptions);
 }
-
 
 function getRowId(rowinfo) { return getRowIdByData(rowinfo.data); }
 function getRowIdByData(rowdata) { return rowdata.filename + '##' + rowdata.line; }
@@ -250,7 +248,12 @@ function addGlobalEvents(ev) {
 }
 
 function onFilterTextBoxChanged() {
+    const value = u('#filter-text-box').first().value;
+    debugger;
+    gridApi.setGridOption( 'quickFilterText', value );
+    /*
     gridApi.setGridOption( 'quickFilterText', document.getElementById('filter-text-box').value );
+    */
 }
 
 
@@ -272,3 +275,9 @@ function selectRowByIndex( index ) {
         gridApi.setNodesSelected({ nodes: [rowNode], newValue: true });
     }
 }
+
+/*
+function onAutoOpenCheckboxChanged() {
+    // vscode.postMessage({ action: 'update-auto-open', value: document.getElementById('auto-open-checkbox').checked });
+}
+*/

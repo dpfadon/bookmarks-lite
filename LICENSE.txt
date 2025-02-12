@@ -1,0 +1,8 @@
+Bookmarks-lite is under GNU GPLv3 License (you can do almost anything you want with this project, except distributing closed source versions). 
+https://www.gnu.org/licenses/gpl-3.0.txt
+
+It uses ag-grid-community (MIT license)
+and umbrellajs (MIT License)
+
+
+Copyright (C) 2025, Diego Pérez-Fadón Gutiérrez, dperezfadong@gmail.com
