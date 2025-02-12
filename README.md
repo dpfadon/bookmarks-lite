@@ -4,20 +4,24 @@ This is a **Visual Studio Code** extension for **creating and managing bookmarks
 
 ## Features
 
-- Bookmarks management using an **editable list** (will appear in a panel but can be dragged to the sidebar).
+- **Editable bookmarks list** (will appear in a panel Visual Studio style but can be dragged to the sidebar).
+  
+  <img src="./img/readme/panelexample.jpg" alt="Bookmark List Panel Example 1" height="170"/>
 - **Quick filter**.
 - You can choose between **different icons** (you can use a heart :D)
 - **keyboard shortcuts**
 
-![Alt text](./img/readme/panelexample.jpg)
+
 
 ## Usage
 
 - **Alt+k+k** (by default) to create a bookmark at the line selected by the cursor.
 - **Alt+l+l** / **Alt+j+j** (by default) to go to next/previous bookmark.
-- **Context menu** over the line / left gutter. 
 - **Doble click on list** to navigate, **Supr**. to delete (or just use the buttons).
-- single click on the name to edit.
+- Single click on the name to edit.
+- **Context menu** over the line / left gutter.
+  
+  <img src="./img/readme/contextualexample.jpg" alt="Contextual Example 1" height="130"/>
 
 ## Why
 
